@@ -26,6 +26,15 @@ public:
 	int getMaxSize() const { return SZ; }
 };
 
+void GetOR(BinVector my_vect);
+void GetAND(BinVector my_vect);
+void GetXOR(BinVector my_vect);
+void GetDOP(BinVector my_vect);
+void GetWN(BinVector my_vect);
+void SetVect(BinVector& link);
+
+BinVector GetSecVec();
+
 template <class number>
 int Get_info(number& a, int flag_for_vect)
 {
