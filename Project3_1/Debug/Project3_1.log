@@ -1,0 +1,5 @@
+﻿  BinVector.cpp
+D:\Program\Lab\Proj2.3.1\Project3_1\BinVector.cpp(64,20): warning C4018: <: несоответствие типов со знаком и без знака
+  Prog3_1.cpp
+D:\Program\Lab\Proj2.3.1\Project3_1\Prog3_1.cpp(20,19): error C2228: выражение слева от ".setVect" должно представлять класс, структуру или объединение
+  Создание кода...
