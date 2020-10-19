@@ -1,0 +1,8 @@
+﻿  main.cpp
+D:\Program\Lab\Proj2vis\Project1\Diocle.h(41,23): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2vis\Project1\main.cpp(24): message : выполняется компиляция ссылки на экземпляр шаблон функции "int Get_info<double>(number &)"
+          with
+          [
+              number=double
+          ]
+  Project1.vcxproj -> D:\Program\Lab\Proj2vis\Project1\Debug\Project1.exe
