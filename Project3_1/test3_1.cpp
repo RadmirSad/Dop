@@ -200,24 +200,14 @@ TEST(BinMeth, GetWN)
 	ASSERT_EQ(str[0], buf[0]);
 	buf = b.WN().getVec();
 	str = "101";
-	for (int i = 0; i < b.getSize(); i++)
+	for (int i = 0; i < str.length(); i++)
 		ASSERT_EQ(str[i], buf[i]);
 	buf = c.WN().getVec();
 	str = "110101";
-	for (int i = 0; i < c.getSize(); i++)
+	for (int i = 0; i < str.length(); i++)
 		ASSERT_EQ(str[i], buf[i]);
 	buf = d.WN().getVec();
 	str = "1111";
-	for (int i = 0; i < d.getSize(); i++)
+	for (int i = 0; i < str.length(); i++)
 		ASSERT_EQ(str[i], buf[i]);
-}
-
-TEST(BinMeth, WNMeth)
-{
-	BinVector a("000101100");
-	char* b = a.WN().getVec();
-	ASSERT_EQ('1', b[0]);
-	ASSERT_EQ('0', b[1]);
-	ASSERT_EQ('1', b[2]);
-	ASSERT_EQ('1', b[3]);
 }
