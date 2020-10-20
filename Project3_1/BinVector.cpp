@@ -22,7 +22,7 @@ BinVector::BinVector(int a)
 BinVector::BinVector(std::string str)
 {
 	if (str.length() >= SZ)
-		throw std::length_error("Длина введённой строки больше, чем максимальный допустимый размер вектора.");
+		throw std::length_error("Р”Р»РёРЅР° РІРІРµРґС‘РЅРЅРѕР№ СЃС‚СЂРѕРєРё Р±РѕР»СЊС€Рµ, С‡РµРј РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РґРѕРїСѓСЃС‚РёРјС‹Р№ СЂР°Р·РјРµСЂ РІРµРєС‚РѕСЂР°.");
 	index = str.length();
 	for (int k = 0; k < index; k++)
 		ar[k] = str[k];
@@ -171,7 +171,7 @@ void GetOR(BinVector my_vect)
 	sec = my_vect.OR(sec);
 	char* buf = sec.getVec();
 	int ind = sec.getSize();
-	std::cout << "Итоговый вектор : { ";
+	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -186,7 +186,7 @@ void GetAND(BinVector my_vect)
 	sec = my_vect.AND(sec);
 	char* buf = sec.getVec();
 	int ind = sec.getSize();
-	std::cout << "Итоговый вектор : { ";
+	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -201,7 +201,7 @@ void GetXOR(BinVector my_vect)
 	sec = my_vect.XOR(sec);
 	char* buf = sec.getVec();
 	int ind = sec.getSize();
-	std::cout << "Итоговый вектор : { ";
+	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -215,7 +215,7 @@ void GetDOP(BinVector my_vect)
 	BinVector sec = my_vect.DOP();
 	char* buf = sec.getVec();
 	int ind = sec.getSize();
-	std::cout << "Итоговый вектор : { ";
+	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -229,7 +229,7 @@ void GetWN(BinVector my_vect)
 	BinVector sec = my_vect.WN();
 	char* buf = sec.getVec();
 	int ind = sec.getSize();
-	std::cout << "Итоговый вектор : { ";
+	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -241,26 +241,26 @@ void GetWN(BinVector my_vect)
 void SetVect(BinVector& vect)
 {
 	int dop_ent = 0, dop_sw = 0, & link = dop_sw;
-	std::cout << "Выберите способ инициализации второго вектора:" << std::endl
-		<< "1. Двоичное число." << std::endl
-		<< "2. Десятичное число" << std::endl;
+	std::cout << "Р’С‹Р±РµСЂРёС‚Рµ СЃРїРѕСЃРѕР± РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РІС‚РѕСЂРѕРіРѕ РІРµРєС‚РѕСЂР°:" << std::endl
+		<< "1. Р”РІРѕРёС‡РЅРѕРµ С‡РёСЃР»Рѕ." << std::endl
+		<< "2. Р”РµСЃСЏС‚РёС‡РЅРѕРµ С‡РёСЃР»Рѕ" << std::endl;
 	while (dop_ent == 0)
 	{
 		Get_num(link, 0);
 		switch (dop_sw)
 		{
 		case 1:
-			std::cout << "Введите число:" << std::endl;
+			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
 			vect.setVec(10);
 			dop_ent = 1;
 			break;
 		case 2:
-			std::cout << "Введите число:" << std::endl;
+			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
 			vect.setVec(2);
 			dop_ent = 1;
 			break;
 		default:
-			std::cout << "Способа с таким номером не существует. Попробуйте снова:" << std::endl;
+			std::cout << "РЎРїРѕСЃРѕР±Р° СЃ С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚. РџРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°:" << std::endl;
 			break;
 		}
 	}
@@ -270,26 +270,26 @@ BinVector GetSecVec()
 {
 	BinVector sec;
 	int dop_ent = 0, dop_sw = 0, & link = dop_sw;
-	std::cout << "Выберите способ инициализации второго вектора:" << std::endl
-		<< "1. Двоичное число." << std::endl
-		<< "2. Десятичное число" << std::endl;
+	std::cout << "Р’С‹Р±РµСЂРёС‚Рµ СЃРїРѕСЃРѕР± РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РЅРѕРІРѕРіРѕ РІРµРєС‚РѕСЂР°:" << std::endl
+		<< "1. Р”РІРѕРёС‡РЅРѕРµ С‡РёСЃР»Рѕ." << std::endl
+		<< "2. Р”РµСЃСЏС‚РёС‡РЅРѕРµ С‡РёСЃР»Рѕ" << std::endl;
 	while (dop_ent == 0)
 	{
 		Get_num(link, 0);
 		switch (dop_sw)
 		{
 		case 1:
-			std::cout << "Введите число:" << std::endl;
+			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
 			sec.setVec(10);
 			dop_ent = 1;
 			break;
 		case 2:
-			std::cout << "Введите число:" << std::endl;
+			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
 			sec.setVec(2);
 			dop_ent = 1;
 			break;
 		default:
-			std::cout << "Способа с таким номером не существует. Попробуйте снова:" << std::endl;
+			std::cout << "РЎРїРѕСЃРѕР±Р° СЃ С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚. РџРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°:" << std::endl;
 			break;
 		}
 	}
