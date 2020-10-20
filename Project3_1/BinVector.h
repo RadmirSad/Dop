@@ -61,7 +61,7 @@ void Get_num(number& num, int flag_for_vect)
 	int flag = 0;
 	while (!flag)
 		if (Get_info(num, flag_for_vect) > 0) flag = 1;
-		else std::cout << "Íåâåğíûé ôîğìàò ââîäà. Ââåäèòå ñíîâà:" << std::endl;
+		else std::cout << "ĞĞµĞ²ĞµÑ€Ğ½Ñ‹Ğ¹ Ñ„Ğ¾Ñ€Ğ¼Ğ°Ñ‚ Ğ²Ğ²Ğ¾Ğ´Ğ°. Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ ÑĞ½Ğ¾Ğ²Ğ°:" << std::endl;
 }
 
 #endif
