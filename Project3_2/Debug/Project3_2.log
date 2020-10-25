@@ -1,0 +1,15 @@
+﻿  BinVector2.cpp
+  main.cpp
+D:\Program\Lab\Proj2.3.1\Project3_2\BinVector2.h(46,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_2\BinVector2.h(64): message : выполняется компиляция ссылки на экземпляр шаблон функции "int Get_info<number>(number &,int)"
+          with
+          [
+              number=int
+          ]
+D:\Program\Lab\Proj2.3.1\Project3_2\main.cpp(8): message : выполняется компиляция ссылки на экземпляр шаблон функции "void Get_num<int>(number &,int)"
+          with
+          [
+              number=int
+          ]
+  Создание кода...
+  Project3_2.vcxproj -> D:\Program\Lab\Proj2.3.1\Project3_2\Debug\Project3_2.exe
