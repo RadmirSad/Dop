@@ -37,11 +37,8 @@ int main()
 			GetWN(my_vect);
 			break;
 		case 6:
-		{
-			BinVector& link = my_vect;
-			link.setVector();
+			SetVec(my_vect);
 			break;
-		}
 		case 7:
 			std::cout << "¬ведЄнный вектор : " << my_vect;
 			break;
