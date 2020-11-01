@@ -14,26 +14,31 @@ BinVector::BinVector(int a)
 		count++;
 	}
 	index = count;
-	ar[count] = '\0';
 	for (int i = 0, j = index - 1; i < j; i++, j--)
 		std::swap(ar[i], ar[j]);
 }
 
-BinVector::BinVector(std::string str)
+BinVector::BinVector(const std::string & str)
 {
-	if (str.length() >= SZ)
+	if (str.length() > SZ)
 		throw std::length_error("Длина введённой строки больше, чем максимальный допустимый размер вектора.");
 	index = str.length();
 	for (int k = 0; k < index; k++)
 		ar[k] = str[k];
-	ar[index] = '\0';
 }
 
-std::ostream& operator << (std::ostream& c, BinVector& b)
+void BinVector:: operator () (const char* str, int len)
 {
-	c << "{ ";
+	index = len;
+	for (int i = 0; i < index; i++)
+		ar[i] = str[i];
+}
+
+std::ostream& operator << (std::ostream& c, const BinVector& b)
+{
 	int i, ind = b.getSize();
-	char* buf = b.getVec();
+	const char * buf = b.ar;
+	c << "{ ";
 	for (i = 0; i < ind; i++)
 	{
 		c << buf[i];
@@ -45,11 +50,32 @@ std::ostream& operator << (std::ostream& c, BinVector& b)
 
 std::istream& operator >> (std::istream& c, BinVector& b)
 {
-	c >> b.ar;
+	std::string str;
+	int flag = 0;
+	std::getline(c, str);
+	if (str.length() == 0) {
+		b.ar[0] = '0';
+		b.index = 1;
+	}
+	else {
+		if (str.length() > b.getMaxSize()) {
+			c.setstate(std::ios::failbit);
+			return c;
+		}
+		for (int i = 0; i < str.length(); i++)
+			if ((str[i] < 48) || (str[i] > 49)) flag = 1;
+		if (flag) c.setstate(std::ios::failbit);
+		else
+		{
+			for (int i = 0; i < str.length(); i++)
+				b.ar[i] = str[i];
+			b.index = str.length();
+		}
+	}
 	return c;
 }
 
-void BinVector::setVector()
+void SetVec(BinVector& my_vect)
 {
 	int count, flag = 0;
 	char k;
@@ -57,114 +83,97 @@ void BinVector::setVector()
 	while (!flag)
 	{
 		count = 0;
-		std::cin >> *this;
-		std::cin.clear();
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		k = ar[0];
-		flag = 1;
-		while (k != '\0')
-		{
-			if ((k != '1') && (k != '0'))
-				flag = 0;
-			k = ar[count + 1];
-			count++;
-		}
-		if (flag == 0) std::cout << "Неверный формат ввода. Введите снова:" << std::endl;
+		std::cin >> my_vect;
+		if (std::cin.good()) std::cout << "Неверный формат ввода. Введите снова:" << std::endl;
+		else flag = 1;
 	}
-	index = count;
-	std::cout << "Введённый вектор : " << *this << std::endl;
+	std::cout << "Введённый вектор : " << my_vect << std::endl;
 }
 
-BinVector BinVector:: operator | (BinVector b)
+void GetMax(char const*& secvect, char const*& maxvect, const BinVector& a, const BinVector& b, int& max, int& secind)
 {
-	int max = 0, secind = 0, ind;
-	char* maxvect = nullptr, * secvect = nullptr;
-	std::string str;
-	if (index > b.getSize())
+	if (a.getSize() > b.getSize())
 	{
-		max = index;
+		max = a.getSize();
 		secind = b.getSize();
-		maxvect = ar;
-		secvect = b.getVec();
+		maxvect = a.ar;
+		secvect = b.ar;
 	}
 	else
 	{
 		max = b.getSize();
-		secind = index;
-		maxvect = b.getVec();
-		secvect = ar;
+		secind = a.getSize();
+		maxvect = b.ar;
+		secvect = a.ar;
 	}
-	for (ind = 1; ind <= secind; ind++)
-		if ((maxvect[max - ind] == '0') && (secvect[secind - ind] == '0')) str += '0';
-		else str += '1';
-	for (ind = max - secind - 1; ind >= 0; ind--)
-		if (maxvect[ind] == '1') str += '1';
-		else str += '0';
-	for (int i = 0, j = str.length() - 1; i < j; i++, j--)
+}
+
+BinVector operator | (const BinVector& a, const BinVector& b)
+{
+	BinVector res;
+	int max = 0, secind = 0, ind, count = 0;
+	char const* secvect, * maxvect = nullptr;
+	GetMax(secvect, maxvect, a, b, max, secind);
+	char* str = new char[max];
+	for (ind = 1; ind <= secind; ind++) {
+		if ((maxvect[max - ind] == '0') && (secvect[secind - ind] == '0')) str[count] = '0';
+		else str[count] = '1';
+		count++;
+	}
+	for (ind = max - secind - 1; ind >= 0; ind--) {
+		if (maxvect[ind] == '1') str[count] = '1';
+		else str[count] = '0';
+		count++;
+	}
+	for (int i = 0, j = count - 1; i < j; i++, j--)
 		std::swap(str[i], str[j]);
-	BinVector res(str);
+	res(str, count);
+	delete[] str;
 	return res;
 }
 
-BinVector BinVector::operator & (BinVector b)
+BinVector operator & (const BinVector& a, const BinVector& b)
 {
-	int max = 0, secind = 0, ind;
-	char* maxvect = nullptr, * secvect = nullptr;
-	std::string str;
-	if (index > b.getSize())
-	{
-		max = index;
-		secind = b.getSize();
-		maxvect = ar;
-		secvect = b.getVec();
+	BinVector res;
+	int max = 0, secind = 0, ind, count = 0;
+	char const* secvect, * maxvect = nullptr;
+	GetMax(secvect, maxvect, a, b, max, secind);
+	char* str = new char[max];
+	for (ind = 1; ind <= secind; ind++) {
+		if ((maxvect[max - ind] == '1') && (secvect[secind - ind] == '1')) str[count] = '1';
+		else str[count] = '0';
+		count++;
 	}
-	else
-	{
-		max = b.getSize();
-		secind = index;
-		maxvect = b.getVec();
-		secvect = ar;
+	for (ind = max - secind - 1; ind >= 0; ind--) {
+		str[count] = '0';
+		count++;
 	}
-	for (ind = 1; ind <= secind; ind++)
-		if ((maxvect[max - ind] == '1') && (secvect[secind - ind] == '1')) str += '1';
-		else str += '0';
-	for (ind = max - secind - 1; ind >= 0; ind--)
-		str += '0';
-	for (int i = 0, j = str.length() - 1; i < j; i++, j--)
+	for (int i = 0, j = count - 1; i < j; i++, j--)
 		std::swap(str[i], str[j]);
-	BinVector res(str);
+	res(str, count);
+	delete[] str;
 	return res;
 }
 
-BinVector BinVector::operator ^= (BinVector b)
+void BinVector::operator ^= (const BinVector& b)
 {
-	int max = 0, secind = 0, ind;
-	char* maxvect = nullptr, * secvect = nullptr;
-	std::string str;
-	if (index > b.getSize())
-	{
-		max = index;
-		secind = b.getSize();
-		maxvect = ar;
-		secvect = b.getVec();
+	int max = 0, secind = 0, ind, count = 0;
+	char const* secvect, * maxvect = nullptr;
+	GetMax(secvect, maxvect, *this, b, max, secind);
+	char* str = new char[max];
+	for (ind = 1; ind <= secind; ind++) {
+		if (maxvect[max - ind] == secvect[secind - ind]) str[count] = '0';
+		else str[count] = '1';
+		count++;
 	}
-	else
-	{
-		max = b.getSize();
-		secind = index;
-		maxvect = b.getVec();
-		secvect = ar;
+	for (ind = max - secind - 1; ind >= 0; ind--) {
+		if (maxvect[ind] == '1') str[count] = '1';
+		else str[count] = '0';
+		count++;
 	}
-	for (ind = 1; ind <= secind; ind++)
-		if (maxvect[max - ind] == secvect[secind - ind]) str += '0';
-		else str += '1';
-	for (ind = max - secind - 1; ind >= 0; ind--)
-		if (maxvect[ind] == '1') str += '1';
-		else str += '0';
-	for (int i = 0, j = str.length() - 1; i < j; i++, j--)
+	for (int i = 0, j = count - 1; i < j; i++, j--)
 		std::swap(str[i], str[j]);
-	BinVector res(str);
-	return res;
+	(*this)(str, count);
 }
 
 BinVector BinVector::operator ~ ()
@@ -177,37 +186,40 @@ BinVector BinVector::operator ~ ()
 	return res;
 }
 
-BinVector BinVector::WN()
+BinVector BinVector::WN(BinVector& res)
 {
-	std::string str;
-	int fir = 0, last = index - 1;
+	char* str = new char[index];
+	int fir = 0, last = index - 1, dop = 0;
 	while ((fir < last) && ((ar[fir] != '1') || (ar[last] != '1')))
 	{
 		if (ar[fir] != '1') fir++;
 		if (ar[last] != '1') last--;
 	}
 	for (fir; fir <= last; fir++)
-		str += ar[fir];
-	BinVector res(str);
-	return res;
+	{
+		str[dop] = ar[fir];
+		dop++;
+	}
+	res(str, dop);
+	delete[] str;
 }
 
-void GetOR(BinVector my_vect)
+void GetOR(const BinVector& my_vect)
 {
 	BinVector sec;
-	sec.setVector();
+	SetVec(sec);
 	sec = my_vect | sec;
-	char* buf = sec.getVec();
+	const char* buf = sec.getVec();
 	int ind = sec.getSize();
 	std::cout << "Итоговый вектор : " << sec << std::endl;
 }
 
-void GetAND(BinVector my_vect)
+void GetAND(const BinVector& my_vect)
 {
 	BinVector sec;
 	sec.getVec();
 	sec = my_vect & sec;
-	char* buf = sec.getVec();
+	const char* buf = sec.getVec();
 	int ind = sec.getSize();
 	std::cout << "Итоговый вектор : " << sec << std::endl;
 }
@@ -216,24 +228,26 @@ void GetXOR(BinVector my_vect)
 {
 	BinVector sec;
 	sec.getVec();
-	sec = my_vect ^= sec;
-	char* buf = sec.getVec();
+	my_vect ^= sec;
+	const char* buf = sec.getVec();
 	int ind = sec.getSize();
 	std::cout << "Итоговый вектор : " << sec << std::endl;
 }
 
-void GetDOP(BinVector my_vect)
+void GetDOP(BinVector& my_vect)
 {
-	BinVector sec = ~ my_vect;
-	char* buf = sec.getVec();
+	BinVector sec;
+	sec = ~ my_vect;
+	const char* buf = sec.getVec();
 	int ind = sec.getSize();
 	std::cout << "Итоговый вектор : " << sec << std::endl;
 }
 
-void GetWN(BinVector my_vect)
+void GetWN(BinVector& my_vect)
 {
-	BinVector sec = my_vect.WN();
-	char* buf = sec.getVec();
+	BinVector sec;
+	my_vect.WN(sec);
+	const char* buf = sec.getVec();
 	int ind = sec.getSize();
 	std::cout << "Итоговый вектор : " << sec << std::endl;
 }
