@@ -14,24 +14,22 @@ BinVector::BinVector(int a)
 		count++;
 	}
 	index = count;
-	ar[count] = '\0';
 	for (int i = 0, j = index - 1; i < j; i++, j--)
 		std::swap(ar[i], ar[j]);
 }
 
-BinVector::BinVector(std::string str)
+BinVector::BinVector(const std::string& str)
 {
 	if (str.length() >= SZ)
-		throw std::length_error("Р”Р»РёРЅР° РІРІРµРґС‘РЅРЅРѕР№ СЃС‚СЂРѕРєРё Р±РѕР»СЊС€Рµ, С‡РµРј РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РґРѕРїСѓСЃС‚РёРјС‹Р№ СЂР°Р·РјРµСЂ РІРµРєС‚РѕСЂР°.");
+		throw std::length_error("Длина введённой строки больше, чем максимальный допустимый размер вектора.");
 	index = str.length();
 	for (int k = 0; k < index; k++)
 		ar[k] = str[k];
-	ar[index] = '\0';
 }
 
 void BinVector::setVec(int div)
 {
-	int k = 0, &dop = k, count = 0;
+	int k = 0, & dop = k, count = 0;
 	if (div == 2) Get_num(dop, 0);
 	else Get_num(dop, 1);
 	while (k != 0)
@@ -42,78 +40,85 @@ void BinVector::setVec(int div)
 		k /= div;
 		count++;
 	}
-	ar[count] = '\0';
 	index = count;
 	for (int i = 0, j = index - 1; i < j; i++, j--)
 		std::swap(ar[i], ar[j]);
 }
 
-BinVector BinVector::OR(BinVector b)
+void BinVector::OR(const BinVector& b, BinVector& res)
 {
-	int max = 0, secind = 0, ind;
-	char* maxvect = nullptr, *secvect = nullptr;
-	std::string str;
-	if (index > b.getSize())
-	{
-		max = index;
-		secind = b.getSize();
-		maxvect = ar;
-		secvect = b.getVec();
+	int max = 0, secind = 0, ind, count = 0;
+	char const * secvect = nullptr, * maxvect = nullptr;
+	GetMax(secvect, maxvect, b, max, secind);
+	char* str = new char[max];
+	for (ind = 1; ind <= secind; ind++) {
+		if ((maxvect[max - ind] == '0') && (secvect[secind - ind] == '0')) str[count] = '0';
+		else str[count] = '1';
+		count++;
 	}
-	else
-	{
-		max = b.getSize();
-		secind = index;
-		maxvect = b.getVec();
-		secvect = ar;
+	for (ind = max - secind - 1; ind >= 0; ind--) {
+		if (maxvect[ind] == '1') str[count] = '1';
+		else str[count] = '0';
+		count++;
 	}
-	for (ind = 1; ind <= secind; ind++)
-		if ((maxvect[max - ind] == '0') && (secvect[secind - ind] == '0')) str += '0';
-		else str += '1';
-	for (ind = max - secind - 1; ind >= 0; ind--)		
-		if (maxvect[ind] == '1') str += '1';
-		else str += '0';
-	for (int i = 0, j = str.length() - 1; i < j; i++, j--)
+	for (int i = 0, j = count - 1; i < j; i++, j--)
 		std::swap(str[i], str[j]);
-	BinVector res(str);
-	return res;
+	res(str, count);
+	delete[] str;
 }
 
-BinVector BinVector::AND(BinVector b)
+void BinVector::AND(const BinVector& b, BinVector& res)
 {
-	int max = 0, secind = 0, ind;
-	char* maxvect = nullptr, * secvect = nullptr;
-	std::string str;
-	if (index > b.getSize())
-	{
-		max = index;
-		secind = b.getSize();
-		maxvect = ar;
-		secvect = b.getVec();
+	int max = 0, secind = 0, ind, count = 0;
+	char const* secvect = nullptr, * maxvect = nullptr;
+	GetMax(secvect, maxvect, b, max, secind);
+	char* str = new char[max];
+	for (ind = 1; ind <= secind; ind++) {
+		if ((maxvect[max - ind] == '1') && (secvect[secind - ind] == '1'))
+			str[count] = '1';
+		else
+			str[count] = '0';
+		count++;
 	}
-	else
-	{
-		max = b.getSize();
-		secind = index;
-		maxvect = b.getVec();
-		secvect = ar;
-	}
-	for (ind = 1; ind <= secind; ind++)
-		if ((maxvect[max - ind] == '1') && (secvect[secind - ind] == '1')) str += '1';
-		else str += '0';
 	for (ind = max - secind - 1; ind >= 0; ind--)
-		str += '0';
-	for (int i = 0, j = str.length() - 1; i < j; i++, j--)
+	{
+		str[count] = '0';
+		count++;
+	}
+	for (int i = 0, j = count - 1; i < j; i++, j--)
 		std::swap(str[i], str[j]);
-	BinVector res(str);
-	return res;
+	res(str, count);
+	delete[] str;
 }
 
-BinVector BinVector::XOR(BinVector b)
+void BinVector::XOR(const BinVector& b, BinVector& res)
 {
-	int max = 0, secind = 0, ind;
-	char* maxvect = nullptr, *secvect = nullptr;
-	std::string str;
+	int max = 0, secind = 0, ind, count = 0;
+	char const* secvect = nullptr, * maxvect = nullptr;
+	GetMax(secvect, maxvect, b, max, secind);
+	char* str = new char[max];
+	for (ind = 1; ind <= secind; ind++) {
+		if (maxvect[max - ind] == secvect[secind - ind])
+			str[count] = '0';
+		else
+			str[count] = '1';
+		count++;
+		}
+	for (ind = max - secind - 1; ind >= 0; ind--) {
+		if (maxvect[ind] == '1')
+			str[count] = '1';
+		else
+			str[count] = '0';
+		count++;
+		}
+	for (int i = 0, j = count - 1; i < j; i++, j--)
+		std::swap(str[i], str[j]);
+	res(str, count);
+	delete[] str;
+}
+
+void BinVector::GetMax(char const*& secvect, char const *& maxvect, const BinVector& b, int& max, int& secind)
+{
 	if (index > b.getSize())
 	{
 		max = index;
@@ -128,50 +133,50 @@ BinVector BinVector::XOR(BinVector b)
 		maxvect = b.getVec();
 		secvect = ar;
 	}
-	for (ind = 1; ind <= secind; ind++)
-		if (maxvect[max - ind] == secvect[secind - ind]) str += '0';
-		else str += '1';
-	for (ind = max - secind - 1; ind >= 0; ind--)		
-		if (maxvect[ind] == '1') str += '1';
-		else str += '0';
-	for (int i = 0, j = str.length() - 1; i < j; i++, j--)
-		std::swap(str[i], str[j]);
-	BinVector res(str);
-	return res;
 }
 
-BinVector BinVector::DOP()
+void BinVector::DOP(BinVector& res)
 {
-	std::string str;
+	char* str = new char [index];
 	for (int i = 0; i < index; i++)
-		if (ar[i] == '0') str += '1';
-		else str += '0';
-	BinVector res(str);
-	return res;
+		if (ar[i] == '0') str[i] = '1';
+		else str[i] = '0';
+	res(str, index);
 }
 
-BinVector BinVector::WN()
+void BinVector::WN(BinVector& res)
 {
-	std::string str;
-	int fir = 0, last = index - 1;
+	char* str = new char [index];
+	int fir = 0, last = index - 1, dop = 0;
 	while ((fir < last) && ((ar[fir] != '1') || (ar[last] != '1')))
 	{
 		if (ar[fir] != '1') fir++;
 		if (ar[last] != '1') last--;
 	}
 	for (fir; fir <= last; fir++)
-		str += ar[fir];
-	BinVector res(str);
-	return res;
+	{
+		str[dop] = ar[fir];
+		dop++;
+	}
+	res(str, dop);
+	delete[] str;
 }
 
-void GetOR(BinVector my_vect)
+void BinVector:: operator () (const char* str, int len)
 {
-	BinVector sec = GetSecVec();
-	sec = my_vect.OR(sec);
-	char* buf = sec.getVec();
-	int ind = sec.getSize();
-	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
+	index = len;
+	for (int i = 0; i < index; i++)
+		ar[i] = str[i];
+}
+
+void GetOR(BinVector& my_vect)
+{
+	BinVector sec, res;
+	GetSecVec(sec);
+	my_vect.OR(sec, res);
+	const char* buf = res.getVec();
+	int ind = res.getSize();
+	std::cout << "Итоговый вектор : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -180,13 +185,14 @@ void GetOR(BinVector my_vect)
 	std::cout << " }" << std::endl;
 }
 
-void GetAND(BinVector my_vect)
+void GetAND(BinVector& my_vect)
 {
-	BinVector sec = GetSecVec();
-	sec = my_vect.AND(sec);
-	char* buf = sec.getVec();
-	int ind = sec.getSize();
-	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
+	BinVector sec, res;
+	GetSecVec(sec);
+	my_vect.AND(sec, res);
+	const char* buf = res.getVec();
+	int ind = res.getSize();
+	std::cout << "Итоговый вектор : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -195,13 +201,14 @@ void GetAND(BinVector my_vect)
 	std::cout << " }" << std::endl;
 }
 
-void GetXOR(BinVector my_vect)
+void GetXOR(BinVector& my_vect)
 {
-	BinVector sec = GetSecVec();
-	sec = my_vect.XOR(sec);
-	char* buf = sec.getVec();
-	int ind = sec.getSize();
-	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
+	BinVector sec, res;
+	GetSecVec(sec);
+	my_vect.XOR(sec, res);
+	const char* buf = res.getVec();
+	int ind = res.getSize();
+	std::cout << "Итоговый вектор : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -210,12 +217,13 @@ void GetXOR(BinVector my_vect)
 	std::cout << " }" << std::endl;
 }
 
-void GetDOP(BinVector my_vect)
+void GetDOP(BinVector& my_vect)
 {
-	BinVector sec = my_vect.DOP();
-	char* buf = sec.getVec();
-	int ind = sec.getSize();
-	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
+	BinVector res;
+	my_vect.DOP(res);
+	const char* buf = res.getVec();
+	int ind = res.getSize();
+	std::cout << "Итоговый вектор : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -224,12 +232,13 @@ void GetDOP(BinVector my_vect)
 	std::cout << " }" << std::endl;
 }
 
-void GetWN(BinVector my_vect)
+void GetWN(BinVector& my_vect)
 {
-	BinVector sec = my_vect.WN();
-	char* buf = sec.getVec();
-	int ind = sec.getSize();
-	std::cout << "РС‚РѕРіРѕРІС‹Р№ РІРµРєС‚РѕСЂ : { ";
+	BinVector res;
+	my_vect.WN(res);
+	const char* buf = res.getVec();
+	int ind = res.getSize();
+	std::cout << "Итоговый вектор : { ";
 	for (int i = 0; i < ind; i++)
 	{
 		std::cout << buf[i];
@@ -238,60 +247,30 @@ void GetWN(BinVector my_vect)
 	std::cout << " }" << std::endl;
 }
 
-void SetVect(BinVector& vect)
+void GetSecVec(BinVector& vect)
 {
 	int dop_ent = 0, dop_sw = 0, & link = dop_sw;
-	std::cout << "Р’С‹Р±РµСЂРёС‚Рµ СЃРїРѕСЃРѕР± РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РІС‚РѕСЂРѕРіРѕ РІРµРєС‚РѕСЂР°:" << std::endl
-		<< "1. Р”РІРѕРёС‡РЅРѕРµ С‡РёСЃР»Рѕ." << std::endl
-		<< "2. Р”РµСЃСЏС‚РёС‡РЅРѕРµ С‡РёСЃР»Рѕ" << std::endl;
+	std::cout << "Выберите способ инициализации нового вектора:" << std::endl
+		<< "1. Двоичное число." << std::endl
+		<< "2. Десятичное число" << std::endl;
 	while (dop_ent == 0)
 	{
 		Get_num(link, 0);
 		switch (dop_sw)
 		{
 		case 1:
-			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
+			std::cout << "Введите число:" << std::endl;
 			vect.setVec(10);
 			dop_ent = 1;
 			break;
 		case 2:
-			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
+			std::cout << "Введите число:" << std::endl;
 			vect.setVec(2);
 			dop_ent = 1;
 			break;
 		default:
-			std::cout << "РЎРїРѕСЃРѕР±Р° СЃ С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚. РџРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°:" << std::endl;
+			std::cout << "Способа с таким номером не существует. Попробуйте снова:" << std::endl;
 			break;
 		}
 	}
-}
-
-BinVector GetSecVec()
-{
-	BinVector sec;
-	int dop_ent = 0, dop_sw = 0, & link = dop_sw;
-	std::cout << "Р’С‹Р±РµСЂРёС‚Рµ СЃРїРѕСЃРѕР± РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РЅРѕРІРѕРіРѕ РІРµРєС‚РѕСЂР°:" << std::endl
-		<< "1. Р”РІРѕРёС‡РЅРѕРµ С‡РёСЃР»Рѕ." << std::endl
-		<< "2. Р”РµСЃСЏС‚РёС‡РЅРѕРµ С‡РёСЃР»Рѕ" << std::endl;
-	while (dop_ent == 0)
-	{
-		Get_num(link, 0);
-		switch (dop_sw)
-		{
-		case 1:
-			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
-			sec.setVec(10);
-			dop_ent = 1;
-			break;
-		case 2:
-			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ:" << std::endl;
-			sec.setVec(2);
-			dop_ent = 1;
-			break;
-		default:
-			std::cout << "РЎРїРѕСЃРѕР±Р° СЃ С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚. РџРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°:" << std::endl;
-			break;
-		}
-	}
-	return sec;
 }
