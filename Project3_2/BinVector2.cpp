@@ -186,7 +186,7 @@ BinVector BinVector::operator ~ ()
 	return res;
 }
 
-BinVector BinVector::WN(BinVector& res)
+void BinVector::WN(BinVector& res)
 {
 	char* str = new char[index];
 	int fir = 0, last = index - 1, dop = 0;

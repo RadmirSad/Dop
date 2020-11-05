@@ -23,7 +23,7 @@ public:
 	friend BinVector operator & (const BinVector& a, const BinVector& b);
 	void operator ^= (const BinVector& b);
 	BinVector operator ~ ();
-	BinVector WN(BinVector& res);
+	void WN(BinVector& res);
 	void operator () (const char* str, int len);
 	int getSize() const { return index; }
 	int getMaxSize() const { return SZ; }
@@ -68,7 +68,7 @@ void Get_num(number& num, int flag_for_int)
 {
 	int flag = 0;
 	while (!flag)
-		switch (Get_info(num, flag_for_vect))
+		switch (Get_info(num, flag_for_int))
 		{
 		case 0:
 			flag = 1;
@@ -83,8 +83,6 @@ void Get_num(number& num, int flag_for_int)
 			std::cout << "Присутствие недопустимых символов. Введите снова:" << std::endl;
 			break;
 		}
-		if (Get_info(num, flag_for_int) > 0) flag = 1;
-		else std::cout << "Неверный формат ввода. Введите снова:" << std::endl;
 }
 
 #endif
