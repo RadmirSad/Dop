@@ -1,0 +1,23 @@
+﻿  Lotto_card.cpp
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(15,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(69,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(85,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(107,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(116,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(123,24): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(172,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(203,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(227,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(250,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(268,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(288,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(304,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(313,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(372,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(392,16): warning C4018: >=: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(428,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(439,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+  Lotto_the_game.cpp
+  Создание кода...
+D:\Program\Lab\Proj2.3.1\Project3_app\Lotto_card.cpp(329): warning C4172: возвращение адреса локальной или временной переменной : temp_lotto
+  Project3_app.vcxproj -> D:\Program\Lab\Proj2.3.1\Project3_app\Debug\Project3_app.exe
