@@ -21,7 +21,7 @@ public:
 	friend void GetMax(char const*& secvect, char const*& maxvect, const BinVector& a, const BinVector& b, int& max, int& secind);
 	friend BinVector operator | (const BinVector& a, const BinVector& b);
 	friend BinVector operator & (const BinVector& a, const BinVector& b);
-	void operator ^= (const BinVector& b);
+	BinVector& operator ^= (const BinVector& b);
 	BinVector operator ~ ();
 	void WN(BinVector& res);
 	void operator () (const char* str, int len);

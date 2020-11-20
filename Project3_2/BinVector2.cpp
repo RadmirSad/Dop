@@ -29,6 +29,7 @@ BinVector::BinVector(const std::string & str)
 
 void BinVector:: operator () (const char* str, int len)
 {
+	if (len >= SZ) throw std::length_error("Длина введённой строки больше, чем максимальный допустимый размер вектора.");
 	index = len;
 	for (int i = 0; i < index; i++)
 		ar[i] = str[i];
@@ -155,7 +156,7 @@ BinVector operator & (const BinVector& a, const BinVector& b)
 	return res;
 }
 
-void BinVector::operator ^= (const BinVector& b)
+BinVector& BinVector::operator ^= (const BinVector& b)
 {
 	int max = 0, secind = 0, ind, count = 0;
 	char const* secvect, * maxvect = nullptr;
@@ -174,6 +175,7 @@ void BinVector::operator ^= (const BinVector& b)
 	for (int i = 0, j = count - 1; i < j; i++, j--)
 		std::swap(str[i], str[j]);
 	(*this)(str, count);
+	return (*this);
 }
 
 BinVector BinVector::operator ~ ()
