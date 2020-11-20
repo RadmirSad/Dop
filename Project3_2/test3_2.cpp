@@ -33,7 +33,7 @@ TEST(VectOper, or)
 		EXPECT_EQ(str[i], buf[i]);
 }
 
-TEST(VectOper, andy)
+TEST(VectOper, and)
 {
 	BinVector a, b(10), c("00110101"), d(15); // 1111
 	const char* buf = (a & b).getVec();
@@ -71,51 +71,49 @@ TEST(VectOper, xor)
 	dop = a;
 	a ^= b;
 	const char* buf = a.getVec();
-	a = dop;
 	std::string str = "1010";
 	for (int i = 0; i < b.getSize(); i++)
 		EXPECT_EQ(str[i], buf[i]);
-	b = dop;
+	a = dop;
+	dop = b;
 	b ^= a;
 	buf = b.getVec();
-	b = dop;
 	for (int i = 0; i < b.getSize(); i++)
 		EXPECT_EQ(str[i], buf[i]);
-	a = dop;
+	b = dop;
+	dop = a;
 	a ^= c;
 	buf = a.getVec();
-	a = dop;
 	str = "00110101";
 	for (int i = 0; i < c.getSize(); i++)
 		EXPECT_EQ(str[i], buf[i]);
-	dop = a;
+	a = dop;
 	a ^= d;
 	buf = a.getVec();
-	a = dop;
 	str = "1111";
 	for (int i = 0; i < d.getSize(); i++)
 		EXPECT_EQ(str[i], buf[i]);
+	a = dop;
 	dop = b;
 	b ^= c;
 	buf = b.getVec();
-	b = dop;
 	str = "00111111";
 	for (int i = 0; i < c.getSize(); i++)
 		EXPECT_EQ(str[i], buf[i]);
-	dop = b;
+	b = dop;
 	b ^= d;
 	buf = b.getVec();
-	b = dop;
 	str = "0101";
 	for (int i = 0; i < b.getSize(); i++)
 		EXPECT_EQ(str[i], buf[i]);
+	b = dop;
 	dop = c;
 	c ^= d;
 	buf = c.getVec();
-	c = dop;
 	str = "00111010";
 	for (int i = 0; i < c.getSize(); i++)
 		EXPECT_EQ(str[i], buf[i]);
+	c = dop;
 }
 
 TEST(VectOper, dop)
