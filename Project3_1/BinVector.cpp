@@ -164,6 +164,7 @@ void BinVector::WN(BinVector& res)
 
 void BinVector:: operator () (const char* str, int len)
 {
+	if (len >= SZ) throw std::length_error("Длина введённой строки больше, чем максимальный допустимый размер вектора.");
 	index = len;
 	for (int i = 0; i < index; i++)
 		ar[i] = str[i];
