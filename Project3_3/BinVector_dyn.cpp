@@ -1,18 +1,5 @@
 #include "BinVector_dyn.h"
 
-BinVector::BinVector(): len(0), bvect(nullptr)
-{
-	char* dop = nullptr;
-	try {
-		dop = new char[1]{};
-	}
-	catch (const std::bad_alloc& e)
-	{
-		std::cout << "Error: " << e.what() << '\n';
-	}
-	bvect = dop;
-}
-
 BinVector::BinVector(int a)
 {
 	int ind = a, count = 0;
@@ -23,14 +10,12 @@ BinVector::BinVector(int a)
 	}
 	len = count;
 	char* ptr = (char*)(&a), * dop = nullptr;
-	if ((count % 8 == 0) && (count != 0)) ind = (count / 8);
+	if (count % 8 == 0) ind = (count / 8);
 	else ind = (count / 8) + 1;
-	try {
-		dop = new char[ind]{};
-	}
-	catch (const std::bad_alloc& e)
+	if (ind)
 	{
-		std::cout << "Error: " << e.what() << '\n';
+		dop = new(std::nothrow) char[ind] {};
+		if (dop == nullptr) throw std::bad_alloc();
 	}
 	bvect = dop;
 	for (int j = 0; j < ind; j++)
@@ -42,37 +27,36 @@ BinVector::BinVector(const char* str)
 	len = 0;
 	int size = 0;
 	char* dop = nullptr;
+	if (str == nullptr) throw std::invalid_argument("Any symbols were expected.");
 	while (str[len])
 		len++;
 	for (int k = 0; k < len; k++)
 		if ((str[k] < 48) || (str[k] > 49)) throw std::invalid_argument("Symbols 1 and 0 were expected.");
-	if ((len % 8 == 0) && (len != 0)) size = (len / 8);
+	if (len % 8 == 0) size = (len / 8);
 	else size = (len / 8) + 1;
-	try {
-		dop = new char[size] {};
-	}
-	catch (const std::bad_alloc& e)
+	if (size)
 	{
-		std::cout << "Error: " << e.what() << '\n';
+		dop = new(std::nothrow) char[size] {};
+		if (dop == nullptr) throw std::bad_alloc();
 	}
 	bvect = dop;
 	for (int i = len - 1; i >= 0; i--)
 		if (str[len - i - 1] == '0') bvect[i / 8] &= ~(1 << (i % 8));
 		else bvect[i / 8] |= 1 << (i % 8);
+	for (int i = len; i < size * 8; i++)
+		bvect[i / 8] &= ~(1 << (i % 8));
 }
 
 BinVector::BinVector(const BinVector& a) : len(a.len), bvect(nullptr)
 {
 	int size = 0;
 	char* dop = nullptr;
-	if ((len % 8 == 0) && (len != 0)) size = (len / 8);
+	if (len % 8 == 0) size = (len / 8);
 	else size = (len / 8) + 1;
-	try {
-		dop = new char[size] {};
-	}
-	catch (const std::bad_alloc& e)
+	if (size)
 	{
-		std::cout << "Error: " << e.what() << '\n';
+		dop = new(std::nothrow) char[size] {};
+		if (dop == nullptr) throw std::bad_alloc();
 	}
 	bvect = dop;
 	for (int i = 0; i < size; i++)
@@ -82,11 +66,14 @@ BinVector::BinVector(const BinVector& a) : len(a.len), bvect(nullptr)
 std::ostream& operator << (std::ostream& c, const BinVector& b)
 {
 	c << "{ ";
-	for (int i = b.len - 1; i >= 0; i--)
-	{
-		c << bool(b.bvect[i / 8] & (1 << (i % 8)));
-		if (i != 0) c << ", ";
-	}
+	if (b.len != 0)
+		for (int i = b.len - 1; i >= 0; i--)
+		{
+			c << bool(b.bvect[i / 8] & (1 << (i % 8)));
+			if (i != 0) c << ", ";
+		}
+	else
+		c << 0;
 	c << " }";
 	return c;
 }
@@ -107,21 +94,21 @@ std::istream& operator >> (std::istream& c, BinVector& b)
 	{
 		int count = 0;
 		char* dop = nullptr;
-		b.len = str.length();
-		if ((str.length() % 8 == 0) && (str.length() != 0)) count = (str.length() / 8);
+		if (str.length() % 8 == 0) count = (str.length() / 8);
 		else count = (str.length() / 8) + 1;
-		try {
-			dop = new char[count] {};
-		}
-		catch (const std::bad_alloc& e)
+		if (count)
 		{
-			std::cout << "Error: " << e.what() << '\n';
+			dop = new(std::nothrow) char[count] {};
+			if (dop == nullptr) throw std::bad_alloc();
 		}
 		delete[] b.bvect;
+		b.len = str.length();
 		b.bvect = dop;
 		for (int i = b.len - 1; i >= 0; i--)
 			if (str[b.len - i - 1] == '0') b.bvect[i / 8] &= ~(1 << (i % 8));
 			else b.bvect[i / 8] |= 1 << (i % 8);
+		for (int i = b.len; i < count * 8; i++)
+			b.bvect[i / 8] &= ~(1 << (i % 8));
 	}
 	return c;
 }
@@ -150,13 +137,8 @@ BinVector operator | (const BinVector& a, const BinVector& b)
 	char const* secvect = nullptr, * maxvect = nullptr;
 	char* str = nullptr;
 	GetMax(a, b, maxvect, secvect, max, secind);
-	try {
-		str = new char[max + 1]{};
-	}
-	catch (const std::bad_alloc& e)
-	{
-		std::cout << "Error: " << e.what() << '\n';
-	}
+	str = new (std::nothrow) char[max + 1]{};
+	if (str == nullptr) throw std::bad_alloc();
 	str[max] = '\0';
 	for (index = 0; index < secind; index++) {
 		if (bool(a.bvect[index / 8] & (1 << (index % 8))) || bool(b.bvect[index / 8] & (1 << (index % 8)))) str[count] = '1';
@@ -182,13 +164,8 @@ BinVector operator & (const BinVector& a, const BinVector& b)
 	char const* secvect = nullptr, * maxvect = nullptr;
 	GetMax(a, b, maxvect, secvect, max, secind);
 	char* str = nullptr;
-	try {
-		str = new char[max + 1]{};
-	}
-	catch (const std::bad_alloc& e)
-	{
-		std::cout << "Error: " << e.what() << '\n';
-	}
+	str = new (std::nothrow) char[max + 1]{};
+	if (str == nullptr) throw std::bad_alloc();
 	str[max] = '\0';
 	for (index = 0; index < secind; index++) {
 		if (bool(a.bvect[index / 8] & (1 << (index % 8))) && bool(b.bvect[index / 8] & (1 << (index % 8)))) str[count] = '1';
@@ -215,13 +192,8 @@ BinVector& BinVector::operator ^= (const BinVector& b)
 	GetMax(*this, b, maxvect, secvect, max, secind);
 	if ((max % 8 == 0) && (max != 0)) index = (max / 8);
 	else index = (max / 8) + 1;
-	try {
-		buf = new char[max + 1]{};
-	}
-	catch (const std::bad_alloc& e)
-	{
-		std::cout << "Error: " << e.what() << '\n';
-	}
+	buf = new (std::nothrow) char[max + 1]{};
+	if (buf == nullptr) throw std::bad_alloc();
 	for (index = 0; index < secind; index++)
 		if (bool(bvect[index / 8] & (1 << (index % 8))) == bool(b.bvect[index / 8] & (1 << (index % 8)))) buf[index / 8] &= ~(1 << (index % 8));
 		else buf[index / 8] |= 1 << (index % 8);
@@ -240,15 +212,10 @@ BinVector& BinVector::operator = (const BinVector& b)
 		return *this;
 	int size = 0;
 	char* dop = nullptr;
-	if ((b.len % 8 == 0) && (b.len != 0)) size = (b.len / 8);
+	if (b.len % 8 == 0) size = (b.len / 8);
 	else size = (b.len / 8) + 1;
-	try {
-		dop = new char[size] {};
-	}
-	catch (const std::bad_alloc& e)
-	{
-		std::cout << "Error: " << e.what() << '\n';
-	}
+	dop = new (std::nothrow) char[size]{};
+	if (dop == nullptr) throw std::bad_alloc();
 	if (len) delete[] bvect;
 	bvect = dop;
 	len = b.len;
@@ -268,22 +235,27 @@ BinVector& BinVector::operator = (BinVector&& b)
 	return *this;
 }
 
-BinVector BinVector::operator~ ()
+BinVector BinVector::operator~ () const
 {
 	char* str = nullptr;
-	try {
-		str = new char[len + 1]{};
-	}
-	catch (const std::bad_alloc& e)
+	if (len != 0)
 	{
-		std::cout << "Error: " << e.what() << '\n';
+		str = new (std::nothrow) char[len + 1]{};
+		if (str == nullptr) throw std::bad_alloc();
+		str[len] = '\0';
+		for (int k = 0; k < len; k++)
+			if (!(bool(bvect[k / 8] & (1 << (k % 8))))) str[k] = '1';
+			else str[k] = '0';
+		for (int i = 0, j = len - 1; i < j; i++, j--)
+			std::swap(str[i], str[j]);
 	}
-	str[len] = '\0';
-	for (int k = 0; k < len; k++)
-		if (!(bool(bvect[k / 8] & (1 << (k % 8))))) str[k] = '1';
-		else str[k] = '0';
-	for (int i = 0, j = len - 1; i < j; i++, j--)
-		std::swap(str[i], str[j]);
+	else
+	{
+		str = new (std::nothrow) char[2];
+		if (str == nullptr) throw std::bad_alloc();
+		str[1] = '\0';
+		str[0] = '1';
+	}
 	BinVector res(str);
 	delete[] str;
 	return res;
@@ -298,14 +270,9 @@ void BinVector::WN(BinVector& res)
 		if (!(bvect[last / 8] & (1 << (last % 8)))) last--;
 	}
 	char* str = nullptr;
-	try {
-		str = new char[last - fir + 1 + 1]{};
-		str[last - fir + 1] = '\0';
-	}
-	catch (const std::bad_alloc& e)
-	{
-		std::cout << "Error: " << e.what() << '\n';
-	}
+	str = new (std::nothrow) char[last - fir + 1 + 1]{};
+	if (str == nullptr) throw std::bad_alloc();
+	str[last - fir + 1] = '\0';
 	for (fir; fir <= last; fir++)
 	{
 		if (bool(bvect[fir / 8] & (1 << (fir % 8)))) str[dop] = '1';
@@ -333,5 +300,17 @@ void GetVec(BinVector& a)
 		}
 		else flag = 1;
 	}
-	//std::cout << a << std::endl;
+}
+
+void BinVector::GetVect(std::string& str)
+{
+	str = "";
+	if (len != 0)
+		for (int i = len - 1; i >= 0; i--)
+		{
+			if (bool(bvect[i / 8] & (1 << (i % 8)))) str += "1";
+			else str += "0";
+		}
+	else
+		str = "0";
 }

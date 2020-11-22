@@ -12,10 +12,11 @@ private:
 	int len;
 	char* bvect;
 public:
-	BinVector();
+	BinVector() : len(0), bvect(nullptr) { ; };
 	BinVector(int a);
 	BinVector(const char* str);
 	BinVector(const BinVector& a);
+	BinVector(BinVector&& a) : len(a.len), bvect(a.bvect) { a.bvect = nullptr; };
 	~BinVector() { delete[] bvect; }
 	friend std::ostream& operator << (std::ostream& c, const BinVector& b);
 	friend std::istream& operator >> (std::istream& c, BinVector& b);
@@ -23,11 +24,12 @@ public:
 	friend BinVector operator | (const BinVector& a, const BinVector& b);
 	friend BinVector operator & (const BinVector& a, const BinVector& b);
 	BinVector& operator ^= (const BinVector& b);
-	BinVector operator ~ ();
+	BinVector operator ~ () const;
 	void WN(BinVector& res);
 	BinVector& operator = (const BinVector& b);
 	BinVector& operator = (BinVector&& b);
 	int GetSize() const { return len; }
+	void GetVect(std::string& str);
 };
 
 void GetVec(BinVector& a);
