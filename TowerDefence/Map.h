@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <vector>
+#include "Light.h"
+#include "Dark.h"
 
 /*=============================== Map ===============================*/
 
@@ -16,10 +18,11 @@ enum Types
 	MOUNTAIN,
 	TOWER,
 	WALL,
-	CASTLE
+	CASTLE,
+	LAIR
 };
 
-enum TypesForUsability
+enum TUsability
 {
 	BAD,
 	GOOD,
@@ -29,17 +32,15 @@ enum TypesForUsability
 
 class Tile
 {
-private:
-	int x = 0;
-	int y = 0;
-	int Type = VALLEY;
+protected:
+	int X = 0;
+	int Y = 0;
 public:
 	Tile() { ; }
-	Tile(const int x0, const int y0) { x = x0; y = y0; }
-	void ChangeTile(const int x1, const int y1) { x = x1; y = y1; }
-	void GetCoord(int& x1, int& y1) const { x1 = x; y1 = y; }
-	int GetType() const { return Type; }
-	int ChangeType(const int NewType);
+	Tile(int x0, int y0);
+	Tile(const Tile& NewTile);
+	void ChangeTile(const int x1, const int y1) { X = x1; Y = y1; }
+	void GetCoord(int& x1, int& y1) const { x1 = X; y1 = Y; }
 };
 
 class Node
@@ -48,12 +49,13 @@ private:
 	Node** Pointers = nullptr;
 	int NumOfNodes = 0;
 	Tile Field;
+	int Prior = 1;
 public:
 	Node() : Field() { ; }
 	int BuildWays();
 };
 
-template <class MyObj>
+/*template <class MyObj>
 class GlobalObjects
 {
 private:
@@ -64,26 +66,36 @@ public:
 	GlobalObjects(const int NumOfOb) : Objects(NumOfOb) { ; }
 	int AddObj(const int Index);
 	int DelObj(const int Index);
-};
+};*/
 
 class Map
 {
 private:
-	Tile** Fields = nullptr;
+	int** Fields = nullptr;
 	int Dim = 10;
-	GlobalObjects<Tile> WayForPlane;
+	int Level = 1;
+	Castle MyCast;
+	Lair* Lairs;
+	int NumOfL;
+	Alive Monsters;
+
 	int GenerStartMap();
+	int ChangeType(int NewType, int x, int y);
+	int ChangeRoad();
 public:
 	Map() { GenerStartMap(); }
 	~Map() {
 		for (int k = 0; k < Dim; k++)
 			delete[] Fields[k];
 		delete[] Fields;
+		delete[] Lairs;
 	}
 	void CheckMap();
 	int GetDim() const { return Dim; };
 	int GetCoordType(const Tile&) const;
-	int GetCoordType(const int x, const int y) const;
+	int GetCoordType(int x, int y) const { return Fields[x][y]; }
+
+	friend std::ostream& operator << (std::ostream& out, Map& MyMap);
 };
 
 #endif
