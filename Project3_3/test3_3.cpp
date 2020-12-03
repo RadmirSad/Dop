@@ -74,6 +74,59 @@ TEST(BinConstr, InitCopy)
 	EXPECT_EQ(str, "100011000");
 }
 
+TEST(BinMeth, Oper_Inp)
+{
+	std::stringstream str("001101000100");
+	std::string res;
+	BinVector a("110010"), b(""), c("00011101101011100"), d("100011000"), e;
+	str >> a;
+	a.GetVect(res);
+	EXPECT_EQ(res, "001101000100");
+	str.str("11111");
+	str.clear();
+	str >> b;
+	b.GetVect(res);
+	EXPECT_EQ(res, "11111");
+	str.str("110100010100");
+	str.clear();
+	str >> c;
+	c.GetVect(res);
+	EXPECT_EQ(res, "110100010100");
+	str.str("0000000100");
+	str.clear();
+	str >> d;
+	d.GetVect(res);
+	EXPECT_EQ(res, "0000000100");
+	str.str("110110500");
+	str.clear();
+	str >> e;
+	EXPECT_EQ(true, str.fail());
+}
+
+TEST(BinMeth, Oper_Out)
+{
+	std::stringstream str;
+	BinVector a("110010"), b(""), c("00011101101011100"), d("100011000"), e;
+	str << a;
+	EXPECT_EQ(str.str(), "{ 1, 1, 0, 0, 1, 0 }");
+	str.str("");
+	str.clear();
+	str << b;
+	EXPECT_EQ(str.str(), "{ 0 }");
+	str.str("");
+	str.clear();
+	str << c;
+	EXPECT_EQ(str.str(), "{ 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0 }");
+	str.str("");
+	str.clear();
+	str << d;
+	EXPECT_EQ(str.str(), "{ 1, 0, 0, 0, 1, 1, 0, 0, 0 }");
+	str.str("");
+	str.clear();
+	str << e;
+	EXPECT_EQ(str.str(), "{ 0 }");
+}
+
 TEST(BinMeth, Oper_OR)
 {
 	BinVector a("110010"), b(""), c("00011101101011100"), d("100011000"), res;
