@@ -3,23 +3,86 @@
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-	BinVector a, b, c(547), dop; // 1000100011
-	std::cout << "¬ведите первый вектор:" << std::endl;
-	GetVec(a);
-	std::cout << "¬ведите второй вектор:" << std::endl;
-	GetVec(b);
-	dop = a | b;
+	BinVector a, b;
+	try
+	{
+		BinVector c(547); // 1000100011
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
+	BinVector dop;
+	try {
+		std::cout << "¬ведите первый вектор:" << std::endl;
+		GetVec(a);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
+	try {
+		std::cout << "¬ведите второй вектор:" << std::endl;
+		GetVec(b);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
+	try {
+		dop = a | b;
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
 	std::cout << a << " | " << b << " = " << dop << std::endl;
-	dop = a & b;
+	try {
+		dop = a & b;
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
 	std::cout << a << " & " << b << " = " << dop << std::endl;
-	dop = ~ a;
+	try {
+		dop = ~a;
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
 	std::cout << "~" << a << " = " << dop << std::endl;
-	dop = a;
-	dop ^= b;
+	try {
+		dop = a;
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
+	try {
+		dop ^= b;
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
 	std::cout << a << "^=" << b << " = " << dop << std::endl;
-	a.WN(dop);
+	try {
+		a.WN(dop);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
 	std::cout << a << " -> " << dop << std::endl;
-	b.WN(dop);
+	try {
+		b.WN(dop);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cout << "Error: " << e.what() << '\n';
+	}
 	std::cout << b << " -> " << dop << std::endl;
 	return 0;
 }

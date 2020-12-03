@@ -13,10 +13,7 @@ BinVector::BinVector(int a)
 	if (count % 8 == 0) ind = (count / 8);
 	else ind = (count / 8) + 1;
 	if (ind)
-	{
-		dop = new(std::nothrow) char[ind] {};
-		if (dop == nullptr) throw std::bad_alloc();
-	}
+		dop = new char[ind] {};
 	bvect = dop;
 	for (int j = 0; j < ind; j++)
 		bvect[j] = ptr[j];
@@ -35,10 +32,7 @@ BinVector::BinVector(const char* str)
 	if (len % 8 == 0) size = (len / 8);
 	else size = (len / 8) + 1;
 	if (size)
-	{
-		dop = new(std::nothrow) char[size] {};
-		if (dop == nullptr) throw std::bad_alloc();
-	}
+		dop = new char[size] {};
 	bvect = dop;
 	for (int i = len - 1; i >= 0; i--)
 		if (str[len - i - 1] == '0') bvect[i / 8] &= ~(1 << (i % 8));
@@ -54,10 +48,7 @@ BinVector::BinVector(const BinVector& a) : len(a.len), bvect(nullptr)
 	if (len % 8 == 0) size = (len / 8);
 	else size = (len / 8) + 1;
 	if (size)
-	{
 		dop = new(std::nothrow) char[size] {};
-		if (dop == nullptr) throw std::bad_alloc();
-	}
 	bvect = dop;
 	for (int i = 0; i < size; i++)
 		bvect[i] = a.bvect[i];
@@ -97,10 +88,7 @@ std::istream& operator >> (std::istream& c, BinVector& b)
 		if (str.length() % 8 == 0) count = (str.length() / 8);
 		else count = (str.length() / 8) + 1;
 		if (count)
-		{
-			dop = new(std::nothrow) char[count] {};
-			if (dop == nullptr) throw std::bad_alloc();
-		}
+			dop = new char[count] {};
 		delete[] b.bvect;
 		b.len = str.length();
 		b.bvect = dop;
@@ -137,8 +125,7 @@ BinVector operator | (const BinVector& a, const BinVector& b)
 	char const* secvect = nullptr, * maxvect = nullptr;
 	char* str = nullptr;
 	GetMax(a, b, maxvect, secvect, max, secind);
-	str = new (std::nothrow) char[max + 1]{};
-	if (str == nullptr) throw std::bad_alloc();
+	str = new char[max + 1]{};
 	str[max] = '\0';
 	for (index = 0; index < secind; index++) {
 		if (bool(a.bvect[index / 8] & (1 << (index % 8))) || bool(b.bvect[index / 8] & (1 << (index % 8)))) str[count] = '1';
@@ -164,8 +151,7 @@ BinVector operator & (const BinVector& a, const BinVector& b)
 	char const* secvect = nullptr, * maxvect = nullptr;
 	GetMax(a, b, maxvect, secvect, max, secind);
 	char* str = nullptr;
-	str = new (std::nothrow) char[max + 1]{};
-	if (str == nullptr) throw std::bad_alloc();
+	str = new char[max + 1]{};
 	str[max] = '\0';
 	for (index = 0; index < secind; index++) {
 		if (bool(a.bvect[index / 8] & (1 << (index % 8))) && bool(b.bvect[index / 8] & (1 << (index % 8)))) str[count] = '1';
@@ -192,8 +178,7 @@ BinVector& BinVector::operator ^= (const BinVector& b)
 	GetMax(*this, b, maxvect, secvect, max, secind);
 	if ((max % 8 == 0) && (max != 0)) index = (max / 8);
 	else index = (max / 8) + 1;
-	buf = new (std::nothrow) char[max + 1]{};
-	if (buf == nullptr) throw std::bad_alloc();
+	buf = new char[max + 1]{};
 	for (index = 0; index < secind; index++)
 		if (bool(bvect[index / 8] & (1 << (index % 8))) == bool(b.bvect[index / 8] & (1 << (index % 8)))) buf[index / 8] &= ~(1 << (index % 8));
 		else buf[index / 8] |= 1 << (index % 8);
@@ -214,8 +199,7 @@ BinVector& BinVector::operator = (const BinVector& b)
 	char* dop = nullptr;
 	if (b.len % 8 == 0) size = (b.len / 8);
 	else size = (b.len / 8) + 1;
-	dop = new (std::nothrow) char[size]{};
-	if (dop == nullptr) throw std::bad_alloc();
+	dop = new char[size]{};
 	if (len) delete[] bvect;
 	bvect = dop;
 	len = b.len;
@@ -240,8 +224,7 @@ BinVector BinVector::operator~ () const
 	char* str = nullptr;
 	if (len != 0)
 	{
-		str = new (std::nothrow) char[len + 1]{};
-		if (str == nullptr) throw std::bad_alloc();
+		str = new char[len + 1]{};
 		str[len] = '\0';
 		for (int k = 0; k < len; k++)
 			if (!(bool(bvect[k / 8] & (1 << (k % 8))))) str[k] = '1';
@@ -251,8 +234,7 @@ BinVector BinVector::operator~ () const
 	}
 	else
 	{
-		str = new (std::nothrow) char[2];
-		if (str == nullptr) throw std::bad_alloc();
+		str = new char[2];
 		str[1] = '\0';
 		str[0] = '1';
 	}
@@ -270,8 +252,7 @@ void BinVector::WN(BinVector& res)
 		if (!(bvect[last / 8] & (1 << (last % 8)))) last--;
 	}
 	char* str = nullptr;
-	str = new (std::nothrow) char[last - fir + 1 + 1]{};
-	if (str == nullptr) throw std::bad_alloc();
+	str = new char[last - fir + 1 + 1]{};
 	str[last - fir + 1] = '\0';
 	for (fir; fir <= last; fir++)
 	{
