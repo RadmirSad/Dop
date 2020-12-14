@@ -6,36 +6,24 @@
 #include "Map.h"
 #include "Light.h"
 
+enum Ways
+{
+	KID,
+	BB,
+	PLANE,
+	TEEN,
+	BILLY,
+	ADAM
+};
+
 class Lair
 {
 private:
-	std::vector<Kid> Kids;
-	std::vector<BigBoy> BigBoys;
-	std::vector<Plane> Planes;
-	std::vector<Teenager> Teenagers;
-	std::vector<Billy> Billies;
-	std::vector<BlackAdam> Adams;
-	std::vector<Tile> WayForPlane;
-	Node* WaysForOthers;
+	std::vector<Enemy> Enemies;
+	std::vector<Node*> Ways;
+	Tile Field;
 public:
 	Lair();
-};
-
-class Alive
-{
-private:
-	std::vector<Kid> Kids;
-	std::vector<BigBoy> BigBoys;
-	std::vector<Plane> Planes;
-	std::vector<Teenager> Teenagers;
-	std::vector<Billy> Billies;
-	std::vector<BlackAdam> Adams;
-public:
-	Alive();
-	template <class Type>
-	int Revive(Type Monster);
-	template <class Type>
-	int Kill(Type Monster);
 };
 
 /*=========================== Enemies ===========================*/

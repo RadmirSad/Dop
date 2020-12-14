@@ -3,8 +3,8 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
-#include <iostream>
 #include <vector>
+#include "Vect.h"
 #include "Light.h"
 #include "Dark.h"
 
@@ -75,25 +75,33 @@ private:
 	int Dim = 10;
 	int Level = 1;
 	Castle MyCast;
-	Lair* Lairs;
-	int NumOfL;
-	Alive Monsters;
+	std::vector<Lair> Lairs;
+	std::vector<Enemy> Monsters;
+	std::vector<Wall> Walls;
+	std::vector<Tower> Towers;
 
 	int GenerStartMap();
 	int ChangeType(int NewType, int x, int y);
 	int ChangeRoad();
+	int Revive();
+	int Kill();
+	int DownloadMap();
+	int SaveMap();
 public:
 	Map() { GenerStartMap(); }
 	~Map() {
 		for (int k = 0; k < Dim; k++)
 			delete[] Fields[k];
 		delete[] Fields;
-		delete[] Lairs;
 	}
 	void CheckMap();
 	int GetDim() const { return Dim; };
 	int GetCoordType(const Tile&) const;
 	int GetCoordType(int x, int y) const { return Fields[x][y]; }
+
+	int CreateMap();
+	template <class Object>
+	int BuildObj(const Object& NewObj);
 
 	friend std::ostream& operator << (std::ostream& out, Map& MyMap);
 };

@@ -58,10 +58,6 @@ private:
 	int Revenue = 15;
 	int CashBalance = 50;
 	int CostOfUpg = 150;
-	std::vector<Wall> Walls;
-	std::vector<Standart> Archers;
-	std::vector<Magnet> Shockers;
-	std::vector<Cannon> Destroyers;
 
 	int ChangeRevenue(int NewRev);
 public:
