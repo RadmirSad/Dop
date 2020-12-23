@@ -23,6 +23,8 @@ public:
 	Destruct(double MHp, int x0, int y0);
 	int GetHealth() const { return Health; }
 	int GetMaxHealth() const { return MaxHealth; }
+	void GetCoord(int& x1, int& y1) const { Field.GetCoord(x1, y1); }
+	void ChangeTile(const int x1, const int y1) { Field.ChangeTile(x1, y1); }
 };
 
 class Building: public Destruct
@@ -91,7 +93,7 @@ public:
 	int GetRad() const { return Radius; }
 };
 
-class Standart : public Tower
+/*class Standart : public Tower
 {
 public:
 	Standart(int Lvl, const Tile& MyField, int NewPr = 25, double NewDam = 15, int NewRad = 4); //{ Tower(NewPr, NewDam, NewRad, MyField); };
@@ -121,7 +123,7 @@ public:
 	Magnet(int Lvl, int x, int y, int NewPr = 25, double NewDam = 7, int NewRad = 4); //{ Tower(NewPr, NewDam, NewRad, x, y); }
 	int ToDamage();
 	int Upgrade();
-};
+};*/
 
 
 #endif

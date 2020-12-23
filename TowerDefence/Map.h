@@ -3,10 +3,11 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
-#include <vector>
 #include "Vect.h"
 #include "Light.h"
 #include "Dark.h"
+#include <sstream>
+#include <fstream>
 
 /*=============================== Map ===============================*/
 
@@ -19,15 +20,18 @@ enum Types
 	TOWER,
 	WALL,
 	CASTLE,
-	LAIR
+	LAIR,
+	EMPTY
 };
 
-enum TUsability
+enum EnTypes
 {
-	BAD,
-	GOOD,
-	DEAD,
-	ALIVE
+	KID,
+	BB,
+	HELICOPTER,
+	TEEN,
+	BILLY,
+	ADAM
 };
 
 class Tile
@@ -52,21 +56,7 @@ private:
 	int Prior = 1;
 public:
 	Node() : Field() { ; }
-	int BuildWays();
 };
-
-/*template <class MyObj>
-class GlobalObjects
-{
-private:
-	int Level = 1;
-	vector<MyObj> Objects;
-public:
-	GlobalObjects() : Objects() { ; }
-	GlobalObjects(const int NumOfOb) : Objects(NumOfOb) { ; }
-	int AddObj(const int Index);
-	int DelObj(const int Index);
-};*/
 
 class Map
 {
@@ -75,18 +65,31 @@ private:
 	int Dim = 10;
 	int Level = 1;
 	Castle MyCast;
-	std::vector<Lair> Lairs;
-	std::vector<Enemy> Monsters;
-	std::vector<Wall> Walls;
-	std::vector<Tower> Towers;
+	MyVector<Lair> Lairs;
+	MyVector<Enemy*> Monsters;
+	MyVector<Wall> Walls;
+	MyVector<Tower> Towers;
+	MyVector<Node*> Ways;
 
 	int GenerStartMap();
+
+	void InstallLevel();
+	int ChangeLevel(int NewLvl);
+	int IsLevelsExist();
 	int ChangeType(int NewType, int x, int y);
+	int ChangeCellType();
+	int CheckEmpty();
+	int CheckCast();
+	int IsRoadExist();
+	void AddEnemy();
+
 	int ChangeRoad();
 	int Revive();
-	int Kill();
+	template <class Type>
+	int Kill(const Iter<Type>& Object);
 	int DownloadMap();
 	int SaveMap();
+	int BuildWays();
 public:
 	Map() { GenerStartMap(); }
 	~Map() {
@@ -105,5 +108,33 @@ public:
 
 	friend std::ostream& operator << (std::ostream& out, Map& MyMap);
 };
+
+
+
+
+template <class number>
+int Get_info(number& a)
+{
+	int flag = 0;
+	std::string dop;
+	getline(std::cin, dop);
+	if (dop.length() == 0) return 0;
+	for (int i = 0; i < dop.length(); i++)
+		if ((dop[i] < '0') || (dop[i] > '9')) flag = 1;
+	if (flag) return 0;
+	std::stringstream ss;
+	ss << dop;
+	ss >> a;
+	return 1;
+}
+
+template <class number>
+void Get_num(number& num)
+{
+	int flag = 0;
+	while (!flag)
+		if (Get_info(num) > 0) flag = 1;
+		else std::cout << "Incorrect symbols. Try again:" << std::endl;
+}
 
 #endif
