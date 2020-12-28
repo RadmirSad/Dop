@@ -4,6 +4,7 @@
 #define _VECT_H_
 
 #include <iostream>
+#include <utility>
 
 enum TUsability
 {
@@ -22,15 +23,15 @@ public:
 	ConstIter() {}
 	ConstIter(T* it) : cur(it) {}
 
-	int operator != (const ConstIter& Dop) const { return cur != Dop.cur; }
-	int operator == (const ConstIter& Dop) const { return cur == Dop.cur; }
-	ConstIter& operator ++ () { ++cur; return *this; }
-	ConstIter& operator -- () { --cur; return *this; }
-	ConstIter operator + (int n) { cur += n; return *this; }
-	ConstIter operator - (int n) { cur -= n; return *this; }
+	int operator != (const ConstIter& Dop) const { return (cur != Dop.cur); }
+	int operator == (const ConstIter& Dop) const { return (cur == Dop.cur); }
+	ConstIter& operator ++ () { if (cur == nullptr) throw std::domain_error("Iterator was empty"); ++cur; return *this; }
+	ConstIter& operator -- () { if (cur == nullptr) throw std::domain_error("Iterator was empty"); --cur; return *this; }
+	ConstIter operator + (int n) { if (cur == nullptr) throw std::domain_error("Iterator was empty"); cur += n; return *this; }
+	ConstIter operator - (int n) { if (cur == nullptr) throw std::domain_error("Iterator was empty"); cur -= n; return *this; }
 
-	const T& operator* () const { return *cur; }
-	const T* operator& () const { return cur; }
+	const T& operator* () const { if (cur == nullptr) throw std::domain_error("Iterator was empty"); return *cur; }
+	const T* operator& () const { if (cur == nullptr) throw std::domain_error("Iterator was empty"); return cur; }
 };
 
 template <class T>
@@ -42,15 +43,15 @@ public:
 	Iter() { ; }
 	Iter(T* it) : cur(it) { ; }
 
-	int operator != (const Iter& Dop) const { return cur != Dop.cur; }
-	int operator == (const Iter& Dop) const { return cur == Dop.cur; }
-	Iter& operator ++ () { ++cur; return *this; }
-	Iter& operator -- () { --cur; return *this; }
-	Iter operator + (int n) { cur += n; return *this; }
-	Iter operator - (int n) { cur -= n; return *this; }
+	int operator != (const Iter& Dop) const { return (cur != Dop.cur); }
+	int operator == (const Iter& Dop) const { return (cur == Dop.cur); }
+	Iter& operator ++ () { if (cur == nullptr) throw std::domain_error("Iterator was empty"); ++cur; return *this; }
+	Iter& operator -- () { if (cur == nullptr) throw std::domain_error("Iterator was empty"); --cur; return *this; }
+	Iter operator + (int n) { if (cur == nullptr) throw std::domain_error("Iterator was empty"); cur += n; return *this; }
+	Iter operator - (int n) { if (cur == nullptr) throw std::domain_error("Iterator was empty"); cur -= n; return *this; }
 
-	T& operator* () const { return *cur; }
-	T* operator& () const { return cur; }
+	T& operator* () const { if (cur == nullptr) throw std::domain_error("Iterator was empty"); return *cur; }
+	T* operator& () const { if (cur == nullptr) throw std::domain_error("Iterator was empty"); return cur; }
 };
 
 template <class T>
@@ -96,17 +97,19 @@ public:
 	T& operator [] (int);
 	friend std::ostream& operator <<<T> (std::ostream& out, const MyVector& Vect);
 
-	int Insert(ConstIter<T>& pos, const T& elem);
-	int Erase(ConstIter<T>& fir, ConstIter<T>& sec);
-	int Clear();
+	int Insert(ConstIter<T> pos, const T& elem);
+	int Erase(ConstIter<T> fir, ConstIter<T> sec);
+	void Clear();
 
 	friend class ConstIter<T>;
 	friend class Iter<T>;
 
-	ConstIter<T> cbegin() { return ConstIter<T>(Elem); }
-	ConstIter<T> cend() { return ConstIter<T>(Elem + Size); }
-	Iter<T> begin() { return Iter<T>(Elem); }
-	Iter<T> end() { return Iter<T>(Elem + Size); }
+	ConstIter<T> cbegin() { ConstIter<T> a(&Elem[0]); return a; }
+	ConstIter<T> cend() { ConstIter<T> a(Elem + Size); return a;}
+	Iter<T> begin() { Iter<T> a(Elem); return a; }
+	Iter<T> end() { Iter<T> a(Elem + Size); return a;}
+
+	int find(T MyEl);
 };
 
 template <class T>
@@ -130,7 +133,9 @@ MyVector<T>::MyVector(const MyVector& Sec)
 	int count = 0;
 	if (Size % DopSize == 0) count = Size;
 	else count = (Size % DopSize) * DopSize + DopSize;
-	Elem = new T[count];
+	if (count != 0)
+		Elem = new T[count];
+	else Elem = nullptr;
 	for (int i = 0; i < Size; i++)
 		Elem[i] = Sec.Elem[i];
 }
@@ -147,7 +152,7 @@ MyVector<T>& MyVector<T>::operator = (const MyVector& Sec)
 	Size = count;
 	delete[] Elem;
 	Elem = buf;
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < Size; i++)
 		Elem[i] = Sec.Elem[i];
 	return *this;
 }
@@ -167,7 +172,7 @@ MyVector<T>& MyVector<T>::operator = (MyVector&& Sec)
 template <class T>
 const T& MyVector<T>::operator [] (int index) const
 {
-	if ((index < 0) || (index >= size)) throw std::out_of_range("The element on this index does not exist");
+	if ((index < 0) || (index >= Size)) throw std::out_of_range("The element on this index does not exist");
 	return Elem[index];
 }
 
@@ -188,53 +193,55 @@ int MyVector<T>::Reallocate(int NewVal)
 		count = Size;
 	else count = NewVal;
 	for (int i = 0; i < count; i++)
-		buf[i] = Elem[i];
-	T NewEl;
-	for (int i = Size; i < NewVal; i++)
-		buf[i] = NewEl;
+		buf[i] = std::move(Elem[i]);
 	delete[] Elem;
 	Elem = buf;
 	return GOOD;
 }
 
 template <class T>
-int MyVector<T>::Insert(ConstIter<T>& pos, const T& myel)
+int MyVector<T>::Insert(ConstIter<T> pos, const T& myel)
 {
 	int index = 0;
-	for (auto it = cbegin(); (it != pos) && (index != Size); ++it)
-		index++;
+	for (; (index < Size) && (&Elem[index] != &pos); index++)	;
 	if ((index == Size) && (pos != cend()))
 	{
+#ifdef DEBUG
 		std::cout << "Incorrect iterator" << std::endl;
+#endif
 		return BAD;
 	}
 	if (Size % DopSize == 0) Reallocate(Size + DopSize);
-	T fir = myel, sec = Elem[index + 1];
-	for (int i = index + 1; i <= Size; i++)
+	T fir = myel;
+	for (int i = index + 1; i < Size; i++)
 	{
-		sec = Elem[i];
+		T sec = Elem[i];
 		Elem[i] = fir;
 		fir = sec;
 	}
-	Elem[Size + 1] = fir;
+	Elem[Size] = fir;
 	Size++;
 	return GOOD;
 }
 
 template <class T>
-int MyVector<T>::Erase(ConstIter<T>& fir, ConstIter<T>& sec)
+int MyVector<T>::Erase(ConstIter<T> fir, ConstIter<T> sec)
 {
 	int First = 0, Second = 0, flag = 0, diff = 0;
 	for (; (First < Size) && (&(Elem[First]) != &fir); ++First)	;
 	if (First == Size)
 	{
+#ifdef DEBUG
 		std::cout << "There are no elements in this range" << std::endl;
+#endif
 		return GOOD;
 	}
 	for (; (Second < Size) && (&(Elem[Second]) != &sec); Second++);
 	if (Second <= First)
 	{
+#ifdef DEBUG
 		std::cout << "Incorrect range" << std::endl;
+#endif
 		return BAD;
 	}
 	diff = Second - First;
@@ -246,11 +253,19 @@ int MyVector<T>::Erase(ConstIter<T>& fir, ConstIter<T>& sec)
 }
 
 template <class T>
-int MyVector<T>::Clear()
+void MyVector<T>::Clear()
 {
 	delete[] Elem;
 	Elem = nullptr;
 	Size = 0;
 }
 
+template <class T>
+int MyVector<T>::find(T MyEl)
+{
+	int num = 0;
+	for (; (num < Size) && (Elem[num] != MyEl); num++);
+	if (num == Size) return -1;
+	else return num;
+}
 #endif

@@ -3,60 +3,22 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
-#include "Vect.h"
-#include "Light.h"
 #include "Dark.h"
 #include <sstream>
 #include <fstream>
+#include <ctime>
+#include <chrono>
+#include <thread>
+
+int GetDist(const Tile& fir, const Tile& sec);
+int IsLevelsExist(int NewLevel);
+int ThisLevelExist(int Lvl);
+void StartGame(Map& MyMap);
+int DownloadDial(Map& MyMap);
+int CheckCellsForRand(const Map& MyMap);
+int OnlyGame(Map& MyMap);
 
 /*=============================== Map ===============================*/
-
-enum Types
-{
-	ROAD,
-	VALLEY,
-	BASIN,
-	MOUNTAIN,
-	TOWER,
-	WALL,
-	CASTLE,
-	LAIR,
-	EMPTY
-};
-
-enum EnTypes
-{
-	KID,
-	BB,
-	HELICOPTER,
-	TEEN,
-	BILLY,
-	ADAM
-};
-
-class Tile
-{
-protected:
-	int X = 0;
-	int Y = 0;
-public:
-	Tile() { ; }
-	Tile(int x0, int y0);
-	Tile(const Tile& NewTile);
-	void ChangeTile(const int x1, const int y1) { X = x1; Y = y1; }
-	void GetCoord(int& x1, int& y1) const { x1 = X; y1 = Y; }
-};
-
-class Node
-{
-private:
-	Node** Pointers = nullptr;
-	int NumOfNodes = 0;
-	Tile Field;
-	int Prior = 1;
-public:
-	Node() : Field() { ; }
-};
 
 class Map
 {
@@ -69,46 +31,54 @@ private:
 	MyVector<Enemy*> Monsters;
 	MyVector<Wall> Walls;
 	MyVector<Tower> Towers;
-	MyVector<Node*> Ways;
+	MyVector<Node> Ways;
 
-	int GenerStartMap();
-
-	void InstallLevel();
+	int InstallLevel(int flag = 0);
 	int ChangeLevel(int NewLvl);
-	int IsLevelsExist();
 	int ChangeType(int NewType, int x, int y);
 	int ChangeCellType();
-	int CheckEmpty();
-	int CheckCast();
-	int IsRoadExist();
-	void AddEnemy();
+	int CheckEmptyCells() const;
+	int CheckEmptyLairs() const;
+	int IsRoadExist() const;
+	void AddPoint(int x, int y);
+	void AddEnemy(int base_type = -1, int base_time = -1, int num_of_lair = -1);
+	void CleanMap();
+	void CleanAll();
+	void AddEdges(int xsec, int ysec);
+	int Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way) const;
 
-	int ChangeRoad();
-	int Revive();
-	template <class Type>
-	int Kill(const Iter<Type>& Object);
-	int DownloadMap();
+//	int ChangeRoad();
+	int Revive(int IndOfLair, int IndOfEnemy);
+	int KillMonst(int IndOfEnemy);
+	int BreakWall(int IndOfWall);
+	int DownloadMap(int lvl);
 	int SaveMap();
-	int BuildWays();
+	void RandGenerate();
+	void FullValley();
+//	int BuildWays();
+	int CheckMonst(int x0, int y0);
+	int CheckPointers(Node* MyNode, int index) const;
+
 public:
-	Map() { GenerStartMap(); }
-	~Map() {
-		for (int k = 0; k < Dim; k++)
-			delete[] Fields[k];
-		delete[] Fields;
-	}
-	void CheckMap();
+	Map() { ; }
+	~Map();
+	void PrintMap(int flag_for_create = 1);
 	int GetDim() const { return Dim; };
 	int GetCoordType(const Tile&) const;
 	int GetCoordType(int x, int y) const { return Fields[x][y]; }
 
-	int CreateMap();
-	template <class Object>
-	int BuildObj(const Object& NewObj);
-
-	friend std::ostream& operator << (std::ostream& out, Map& MyMap);
+	int DialogMap();
+	int TDamCast(double Dam) { return MyCast.TakeDamage(Dam); }
+	int WDamCast(double Dam, int index) { return Walls[index].TakeDamage(Dam); }
+	int BuildWall(int x0, int y0);
+	int BuildTow(int x0, int y0);
+	double GetCoef() const { return (double)(Level + 9) / 10; }
+	friend class BigBoy;
+	friend class Enemy;
+	friend class Tower;
+	friend void StartGame(Map& MyMap);
+	friend int DownloadDial(Map& MyMap);
 };
-
 
 
 
