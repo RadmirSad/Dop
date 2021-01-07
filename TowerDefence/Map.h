@@ -8,7 +8,10 @@
 #include <fstream>
 #include <ctime>
 #include <chrono>
+#include <mutex>
 #include <thread>
+
+#include <Windows.h>
 
 int GetDist(const Tile& fir, const Tile& sec);
 int IsLevelsExist(int NewLevel);
@@ -16,7 +19,14 @@ int ThisLevelExist(int Lvl);
 void StartGame(Map& MyMap);
 int DownloadDial(Map& MyMap);
 int CheckCellsForRand(const Map& MyMap);
-int OnlyGame(Map& MyMap);
+int OnlyTowers(Map& MyMap, int& flag_for_monst);
+int OnlyMonsters(Map& MyMap, int& flag_for_alive);
+void GetMenu(Map& MyMap, int& quit);
+void clear_cmd();
+void NewObject(Map& MyMap, int type);
+void GetCoordinates(int& x, int& y, const Map& MyMap);
+void UpgradeTow(Map& MyMap);
+void Waiting(Map& MyMap, int& flag_for_exit);
 
 /*=============================== Map ===============================*/
 
@@ -35,7 +45,7 @@ private:
 
 	int InstallLevel(int flag = 0);
 	int ChangeLevel(int NewLvl);
-	int ChangeType(int NewType, int x, int y);
+	
 	int ChangeCellType();
 	int CheckEmptyCells() const;
 	int CheckEmptyLairs() const;
@@ -43,9 +53,8 @@ private:
 	void AddPoint(int x, int y);
 	void AddEnemy(int base_type = -1, int base_time = -1, int num_of_lair = -1);
 	void CleanMap();
-	void CleanAll();
 	void AddEdges(int xsec, int ysec);
-	int Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way) const;
+	int Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way, int IsFly) const;
 
 //	int ChangeRoad();
 	int Revive(int IndOfLair, int IndOfEnemy);
@@ -63,21 +72,33 @@ public:
 	Map() { ; }
 	~Map();
 	void PrintMap(int flag_for_create = 1);
+	void PrintTable();
 	int GetDim() const { return Dim; };
 	int GetCoordType(const Tile&) const;
 	int GetCoordType(int x, int y) const { return Fields[x][y]; }
+	int ChangeType(int NewType, int x, int y);
+	void CleanAll();
 
 	int DialogMap();
 	int TDamCast(double Dam) { return MyCast.TakeDamage(Dam); }
-	int WDamCast(double Dam, int index) { return Walls[index].TakeDamage(Dam); }
+	int TDamWall(double Dam, int index) { return Walls[index].TakeDamage(Dam); }
 	int BuildWall(int x0, int y0);
 	int BuildTow(int x0, int y0);
+	int UpgCast() { return MyCast.Upgrade(GetCoef()); }
+	int RepCast() { return MyCast.Repair(MyCast); }
+	double GetHpCast() const { return MyCast.GetHealth(); }
+	void RepWall();
 	double GetCoef() const { return (double)(Level + 9) / 10; }
+
+	friend void StartGame(Map& MyMap);
+	friend int DownloadDial(Map& MyMap);
+	friend int OnlyMonsters(Map& MyMap, int& flag_for_alive);
+	friend int OnlyTowers(Map& MyMap, int& flag_for_monst);
+	friend void UpgradeTow(Map& MyMap);
+
 	friend class BigBoy;
 	friend class Enemy;
 	friend class Tower;
-	friend void StartGame(Map& MyMap);
-	friend int DownloadDial(Map& MyMap);
 };
 
 
@@ -89,7 +110,7 @@ int Get_info(number& a)
 	std::string dop;
 	getline(std::cin, dop);
 	if (dop.length() == 0) return 0;
-	for (int i = 0; i < dop.length(); i++)
+	for (size_t i = 0; i < dop.length(); i++)
 		if ((dop[i] < '0') || (dop[i] > '9')) flag = 1;
 	if (flag) return 0;
 	std::stringstream ss;

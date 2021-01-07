@@ -52,10 +52,17 @@ Building::Building(int Cost, double Inc, double MHp, int x0, int y0): Destruct(M
 	HpIncrease = Inc;
 }
 
-void Building::Repair()
+int Building::Repair(Castle& MyCast)
 {
+	if (MyCast.Cash() - CostOfRepair < 0)
+	{
+		std::cout << "You don't have enough money" << std::endl;
+		return BAD;
+	}
 	if (Health + HpIncrease > MaxHealth) Health = MaxHealth;
 	else Health += HpIncrease;
+	MyCast.BuySmth(CostOfRepair);
+	return GOOD;
 }
 
 /*================================ Methods for Castle ================================*/
@@ -76,12 +83,20 @@ int Castle::ChangeRevenue(int NewRev)
 	return GOOD;
 }
 
-void Castle::Upgrade(double coef)
+int Castle::Upgrade(double coef)
 {
+	if (CashBalance - CostOfUpg < 0)
+	{
+		std::cout << "You don't have enough money for upgrade" << std::endl;
+		return BAD;
+	}
 	CashBalance -= CostOfUpg;
 	CostOfUpg += (int)(100 * coef);
 	Revenue += (int)(15 * coef);
 	CostOfUpg += (int)(75 * coef);
+	MaxHealth += (60 * coef);
+	Health = MaxHealth;
+	return GOOD;
 }
 
 int Castle::BuySmth(double Cost)
@@ -107,6 +122,12 @@ void Castle::Multiply(double coef)
 	HpIncrease *= coef; MaxHealth *= coef; Revenue = (int)(coef * Revenue);
 }
 
+void Castle::SetBasicParams()
+{
+	CashBalance = 50, Revenue = 15, CostOfUpg = 150;
+	CostOfRepair = 100, HpIncrease = 100, MaxHealth = 250, Health = 250;
+}
+
 /*=============================== Methods for Tower ===============================*/
 
 int Tower::ToDamage(Map& MyMap)
@@ -115,12 +136,20 @@ int Tower::ToDamage(Map& MyMap)
 	{
 		Tracker = nullptr;
 		Tracker = FindEnemy(MyMap);
-	}	
-	if ((Tracker != nullptr) && (Tracker->TakeDamage(DamPerSec) == DEAD))
+	}
+	if (Tracker != nullptr)
 	{
-		int index = 0;
-		while ((index < MyMap.Monsters.GetSize()) && (MyMap.Monsters[index] != Tracker)) index++;
-		return MyMap.KillMonst(index);
+		int result = Tracker->TakeDamage(DamPerSec);
+		Tracker->TimeWithDam = 0;
+		if (result == DEAD)
+		{
+			int index = 0;
+			while ((index < MyMap.Monsters.GetSize()) && (MyMap.Monsters[index] != Tracker))
+				index++; // Find index of dead monster
+			if (index == MyMap.Monsters.GetSize()) throw std::logic_error("Index was more than available");
+			index = MyMap.KillMonst(index);
+			return index;
+		}
 	}
 	return GOOD;
 }

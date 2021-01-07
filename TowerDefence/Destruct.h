@@ -5,6 +5,8 @@
 
 #include "Tile.h"
 
+class Castle;
+
 class Destruct
 {
 protected:
@@ -37,7 +39,7 @@ public:
 	Building(int Cost, double Inc, double MHp, int x0, int y0);
 	int GetCostRep() const { return CostOfRepair; }
 	double GetHpInc() const { return HpIncrease; }
-	void Repair();
+	int Repair(Castle& MyCast);
 };
 
 #endif

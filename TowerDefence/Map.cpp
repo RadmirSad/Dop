@@ -18,6 +18,12 @@ Tile::Tile(const Tile& NewTile)
 	Y = y;
 }
 
+std::ostream& operator << (std::ostream& out, const Tile& dop)
+{
+	out << "  [" << dop.X << ", " << dop.Y << "]  ";
+	return out;
+}
+
 /*=============================== Methods for Map ===============================*/
 
 Map::~Map()
@@ -27,7 +33,7 @@ Map::~Map()
 
 int Map::ChangeType(int NewType, int x, int y)
 {
-	if ((NewType < ROAD) || (NewType > CASTLE)) return BAD;
+	if ((NewType < BASIN) || (NewType > EMPTY)) return BAD;
 	Fields[x][y] = NewType;
 	return GOOD;
 }
@@ -44,11 +50,16 @@ void Map::PrintMap(int flag_for_create)
 	std::cout << std::endl;
 	for (int i = 0; i <= Dim; i++)
 		if (i == 0) std::cout << "   ";
-		else std::cout << " " << i - 1 << " ";
+		else {
+			if (i - 1 < 10) std::cout << " " << i - 1 << " ";
+			else std::cout << " " << i - 1;
+		}
 	std::cout << " X " <<std::endl;
 	for (int y = 0; y < Dim; y++)
 	{
-		std::cout << " " << y << " ";
+		if (y < 10)
+			std::cout << " " << y << " ";
+		else std::cout << " " << y;
 		for (int x = 0; x < Dim; x++)
 		{
 			if ((Fields[x][y] == ROAD) || (Fields[x][y] == BASIN))
@@ -64,7 +75,7 @@ void Map::PrintMap(int flag_for_create)
 				{
 					if(Fields[x][y] == ROAD)
 						std::cout << "[=]";
-					else std::cout << " ~ ";
+					else std::cout << "~~~";
 				}
 				else
 					std::cout << Monsters[ind]->Print();
@@ -80,7 +91,7 @@ void Map::PrintMap(int flag_for_create)
 					std::cout << " A ";
 					break;
 				case TOWER:
-					std::cout << " T ";
+					std::cout << "<T>";
 					break;
 				case WALL:
 					std::cout << " # ";
@@ -107,7 +118,7 @@ void Map::PrintMap(int flag_for_create)
 	{
 		for (int i = 0; i < Lairs.GetSize(); i++)
 		{
-			std::cout << "Lair ¹" << i + 1 << ":" << std::endl;
+			std::cout << std::endl << "Lair #" << i + 1 << ":" << std::endl;
 			if (!Lairs[i].Enemies.GetSize())
 				std::cout << " This lair is empty " << std::endl;
 			for (int j = 0; j < Lairs[i].Enemies.GetSize(); j++) 
@@ -130,6 +141,40 @@ void Map::PrintMap(int flag_for_create)
 	{
 		std::cout << std::endl << "My balance: " << MyCast.Cash() << std::endl;
 	}
+}
+
+void Map::PrintTable()
+{
+	std::cout << "Your castle:" << std::endl
+		<< " Balance = " << MyCast.CashBalance << "  Revenue = " << MyCast.Revenue
+		<< " Health = " << MyCast.GetHealth() << "  Max health = " << MyCast.GetMaxHealth() << std::endl;
+	if (Towers.GetSize()) {
+		std::cout << std::endl << "Your towers:" << std::endl;
+		for (int i = 0; i < Towers.GetSize(); i++)
+		{
+			Tower dop = Towers[i];
+			std::cout << "Tower # " << i + 1 << std::endl
+				<< " Radius = " << dop.GetRad() << "  " << " Damage = " << dop.GetDam() << std::endl
+				<< " Coordinates:" << dop.GetTile();
+			if (dop.Tracker != nullptr) std::cout << "  Coordinates of his enemy:" << dop.Tracker->GetTile()
+				<< " His HP = " << dop.Tracker->GetHealth() << "  His Max HP = " << dop.Tracker->GetMaxHealth();
+			std::cout << std::endl;
+		}
+	}
+	else std::cout << std::endl << "You don't have any towers" << std::endl;
+	if (Walls.GetSize())
+	{
+		std::cout << std::endl << "Your walls:" << std::endl;
+		for (int i = 0; i < Walls.GetSize(); i++)
+		{
+			Wall W = Walls[i];
+			int x, y; 
+			W.GetCoord(x, y);
+			std::cout << "Wall # " << i + 1 << std::endl
+				<< " Health = " << W.GetHealth() << "  Max health = "<< W.GetMaxHealth() << "  Coordinates: [" << x << ", " << y << "] " << std::endl;
+		}
+	}
+	else std::cout << std::endl << "You don't have any walls" << std::endl;
 }
 
 /*=============================== Creating map ================================*/
@@ -165,7 +210,7 @@ int Map::DialogMap()
 			<< "3. Add enemy" << std::endl
 			<< "4. Create and save" << std::endl
 			<< "5. Randomize fields (only when map hasn't lairs, castle and roads)" << std::endl
-			<< "6. Map only with 'valley' (only when map hasn't lairs, castle and roads)"<< std::endl << std::endl;
+			<< "6. Map only with 'valley'"<< std::endl << std::endl;
 		Num = 0;
 		Get_num(Num);
 		switch (Num)
@@ -196,9 +241,7 @@ int Map::DialogMap()
 			else std::cout << "Your map already has lair, or castle, or road" << std::endl;
 			break;
 		case 6:
-			if (CheckCellsForRand(*this) == GOOD)
-				FullValley();
-			else std::cout << "Your map already has lair, or castle, or road" << std::endl;
+			FullValley();
 			break;
 		default:
 			std::cout << "There is no function with this number" << std::endl;
@@ -213,7 +256,8 @@ void Map::FullValley()
 {
 	for (int i = 0; i < Dim; i++)
 		for (int j = 0; j < Dim; j++)
-			Fields[i][j] = VALLEY;
+			if((Fields[i][j] != ROAD) && (Fields[i][j] != CASTLE) && (Fields[i][j] != LAIR) && (Fields[i][j] != BASIN))
+				Fields[i][j] = VALLEY;
 }
 
 void Map::RandGenerate()
@@ -221,7 +265,11 @@ void Map::RandGenerate()
 	srand(time(0));
 	for (int i = 0; i < Dim; i++)
 		for (int j = 0; j < Dim; j++)
+		{
 			Fields[i][j] = rand() % 3;
+			if (Fields[i][j] == BASIN)
+				AddPoint(i, j);
+		}
 }
 
 int Map::CheckEmptyLairs() const
@@ -384,21 +432,8 @@ int Map::ChangeCellType()
 	int x = -1, y = -1, flag = 0, type = -1, flag_for_cast = 0;
 	while (!flag)
 	{
-		std::cout << "Enter the x coordinate in the range from 0 to " << Dim - 1 << ":\n";
-		Get_num(x);
-		if ((x >= Dim) || (x < 0))
-		{
-			std::cout << "Incorrect value" << std::endl;
-			continue;
-		}
-		std::cout << "Enter the y coordinate in the range from 0 to " << Dim - 1 << ":\n";
-		Get_num(y);
-		if ((y >= Dim) || (y < 0))
-		{
-			std::cout << "Incorrect value" << std::endl;
-			continue;
-		}
-		if ((Fields[x][y] != CASTLE) && (Fields[x][y] != LAIR) && (Fields[x][y] != ROAD))
+		GetCoordinates(x, y, *this);
+		if ((Fields[x][y] != CASTLE) && (Fields[x][y] != LAIR) && (Fields[x][y] != ROAD) && (Fields[x][y] != BASIN))
 			flag = 1;
 		else
 			std::cout << "This cell is busy" << std::endl;
@@ -426,6 +461,8 @@ int Map::ChangeCellType()
 			break;
 		case 3:
 			type = BASIN;
+			AddPoint(x, y);
+			Ways[Ways.GetSize() - 1].ChangePrior();
 			break;
 		case 4:
 			type = MOUNTAIN;
@@ -495,14 +532,18 @@ void Map::AddPoint(int x, int y)
 	}
 	else
 		Ways.Insert(it, ptr);
-	if ((x + 1 < Dim) && ((Fields[x + 1][y] == ROAD) || (Fields[x + 1][y] == CASTLE) || (Fields[x + 1][y] == LAIR)))
+	if ((x + 1 < Dim) && ((Fields[x + 1][y] == ROAD) || (Fields[x + 1][y] == CASTLE) 
+		|| (Fields[x + 1][y] == LAIR) || (Fields[x + 1][y] == BASIN)))
 		AddEdges(x + 1, y);
-	if ((y + 1 < Dim) && ((Fields[x][y + 1] == ROAD) || (Fields[x][y + 1] == CASTLE) || (Fields[x][y + 1] == LAIR)))
+	if ((y + 1 < Dim) && ((Fields[x][y + 1] == ROAD) || (Fields[x][y + 1] == CASTLE)
+		|| (Fields[x][y + 1] == LAIR) || (Fields[x][y + 1] == BASIN)))
 		AddEdges(x, y + 1);
-	if ((x - 1 >= 0) && ((Fields[x - 1][y] == ROAD) || (Fields[x - 1][y] == CASTLE) || (Fields[x - 1][y] == LAIR)))
+	if ((x - 1 >= 0) && ((Fields[x - 1][y] == ROAD) || (Fields[x - 1][y] == CASTLE)
+		|| (Fields[x - 1][y] == LAIR) || (Fields[x - 1][y] == BASIN)))
 		AddEdges(x - 1, y);
-	if ((y - 1 >= 0) && ((Fields[x][y - 1] == ROAD) || (Fields[x][y - 1] == CASTLE) || (Fields[x][y - 1] == LAIR)))
-		AddEdges( x, y - 1);
+	if ((y - 1 >= 0) && ((Fields[x][y - 1] == ROAD) || (Fields[x][y - 1] == CASTLE)
+		|| (Fields[x][y - 1] == LAIR) || (Fields[x][y - 1] == BASIN)))
+		AddEdges(x, y - 1);
 }
 
 void Map::AddEdges(int xsec, int ysec)
@@ -546,18 +587,18 @@ int Map::IsRoadExist() const
 	int count = 0, xCast = 0, yCast = 0, xLair = 0, yLair = 0, MySize = Lairs.GetSize();
 	MyVector<Tile> dop;
 	for (int ind = 0; ind < MySize; ind++)
-		count += Dijkstra(Lairs[ind].GetTile(), MyCast.GetTile(), dop);
+		count += Dijkstra(Lairs[ind].GetTile(), MyCast.GetTile(), dop, KID);
 	if (count == (MySize * GOOD))
 		return GOOD;
 	else return BAD;
 }
 
-int Map::Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way) const
+int Map::Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way, int IsFly) const
 {
 	way.Clear();
 	way.Insert(way.cend(), start);
-	int x = 0, st = 0, en = 0, MySize = Ways.GetSize() , * visited = new int[MySize]{}, 
-		* dist = new int[MySize], index = 0;
+	int x = 0, st = 0, en = 0, MySize = Ways.GetSize(), * visited = new int [MySize] {},
+		* dist = new int [MySize] {}, index = 0, dop_count = 0, * par = new int[MySize] {};
 	while ((st < MySize) && (en < MySize)) // Find index of start and end point
 	{
 		if (start != Ways[st].GetTile()) st++;
@@ -571,10 +612,18 @@ int Map::Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way) const
 #endif
 		return BAD;
 	}
+	if (!IsFly) 
+	{
+		for (int i = 0; i < MySize; i++)
+			if (Ways[i].GetPrior() == 2) {
+				visited[i] = 1;
+				dop_count++;
+			} 
+	}
 	for (int i = 0; i < MySize; i++) // Initialize distance
 		dist[i] = INT_MAX;
 	dist[st] = 0;
-	for(int dop = 0; dop < MySize; dop++)
+	for(int dop = 0; dop < MySize - dop_count; dop++) // Check 
 	{
 		index = -1;
 		for (int j = 0; j < MySize; j++)
@@ -586,10 +635,7 @@ int Map::Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way) const
 		{
 			x = 0;
 			while ((x < Ways.GetSize()) && (Ways[index].GetPoint(i)->GetTile() != Ways[x].GetTile()))
-			{// Find corresponding node
-				std::cout << Ways[index].GetSize() << " - size" << std::endl;
-				x++;
-			}
+				x++; // Find corresponding node
 			if (x == Ways.GetSize())
 			{
 				std::cout << "ERROR" << std::endl;
@@ -598,7 +644,7 @@ int Map::Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way) const
 			if (dist[x] > 1 + dist[index])
 			{
 				dist[x] = 1 + dist[index];
-				way.Insert(way.cend(), Ways[x].GetTile());
+				par[x] = index;
 			}
 		}
 	}
@@ -610,7 +656,10 @@ int Map::Dijkstra(const Tile& start, const Tile& end, MyVector<Tile>& way) const
 		std::cout << "Way wasn't build" << std::endl;
 		return BAD;
 	}
+	for (int V = en; V != st; V = par[V])
+		way.Insert(way.cbegin(), Ways[V].GetTile());
 	delete[] dist;
+	delete[] par;
 	return GOOD;
 }
 
@@ -662,10 +711,11 @@ int Map::SaveMap()
 		for (int i = 0; i < size; i++)
 		{
 			int CountOfPtr = Ways[i].GetSize();
+			MyFile << CountOfPtr;
 			for (int j = 0; j < CountOfPtr; j++) // write coordinates of pointers
 			{
 				Ways[i].GetPoint(j)->GetCoord(x, y);
-				MyFile << CountOfPtr << " " << x << " " << y << " ";
+				MyFile << " " << x << " " << y << " ";
 			}
 			MyFile << std::endl;
 		}
@@ -699,6 +749,7 @@ int Map::DownloadMap(int lvl)
 		getline(MyFile, res); str.str(res); str.clear();// read coordinates of the castle
 		str >> x >> y;
 		MyCast.ChangeTile(x, y);
+		MyCast.SetBasicParams();
 		MyCast.Multiply(GetCoef());
 		getline(MyFile, res); str.str(res); str.clear();// read number of lairs
 		str >> size;
@@ -745,7 +796,7 @@ int Map::DownloadMap(int lvl)
 				str >> x >> y;
 				int ind = 0;
 				Node dop(x, y, type);
-				for (; (ind < Ways.GetSize()) && (dop.GetTile() == Ways[ind].GetTile()); ind++);
+				for (; (ind < Ways.GetSize()) && (dop.GetTile() != Ways[ind].GetTile()); ind++);
 				Ways[i].Insert(Ways[i].cend(), &(Ways[ind]));
 			}
 		}
@@ -763,27 +814,32 @@ int Map::Revive(int IndOfLair, int IndOfEnemy)
 {
 	if ((IndOfLair < 0) || (IndOfLair > Lairs.GetSize()))
 	{
-#ifdef DEBUG
-		std::cout << "Index of lair is out of range" << std::endl;
-#endif
+		throw std::out_of_range("Index of lair is out of range");
 		return BAD;
 	}
 	if ((IndOfEnemy < 0) || (IndOfEnemy > Lairs[IndOfLair].Enemies.GetSize()))
 	{
-#ifdef DEBUG
-		std::cout << "Index of enemy is out of range" << std::endl;
-#endif
+		throw std::out_of_range("Index of enemy is out of range");
 			return BAD;
 	}
-	Enemy* buf = Lairs[IndOfLair].Enemies[IndOfEnemy]; ConstIter<Enemy*> it(&Lairs[IndOfLair].Enemies[IndOfEnemy]);
-	Lairs[IndOfLair].Enemies.Erase(it, it + 1);
-	Monsters.Insert(Monsters.cend(), buf);
+	Enemy* buf = Lairs[IndOfLair].Enemies[IndOfEnemy];
+
+	ConstIter<Enemy*> fir(&Lairs[IndOfLair].Enemies[IndOfEnemy]), sec; // Delete monster from his lair
+	if (IndOfEnemy + 1 < Lairs[IndOfLair].Enemies.GetSize())
+		sec = &Lairs[IndOfLair].Enemies[IndOfEnemy + 1];
+	else sec = Lairs[IndOfLair].Enemies.cend();
+	Lairs[IndOfLair].Enemies.Erase(fir, sec);
+
+	Monsters.Insert(Monsters.cend(), buf); // Add monster into the vector of living monsters
 	MyVector<Tile> NewWay;
-	if (Dijkstra(Lairs[IndOfLair].Field, MyCast.GetTile(), NewWay) == GOOD)
+	int dop = buf->GetType(), Fly = 0;
+	if ((dop == HELICOPTER) || (dop == ADAM)) 
+		Fly = 1;
+	if (Dijkstra(Lairs[IndOfLair].Field, MyCast.GetTile(), NewWay, Fly) == GOOD) // Find way for new monster
 	{
 		int MyInd = Monsters.GetSize() - 1;
 		Monsters[MyInd]->ChangeWay(NewWay);
-		Monsters[MyInd]->ChangeTile(NewWay[0]);
+		Monsters[MyInd]->ChangeTile(NewWay[1]);
 	}
 	else
 		return BAD;
@@ -794,16 +850,39 @@ int Map::KillMonst(int IndOfEnemy)
 {
 	if ((IndOfEnemy < 0) || (IndOfEnemy >= Monsters.GetSize()))
 	{
-#ifdef DEBUG
-		std::cout << "Index of enemy is out of range" << std::endl;
-#endif
+		throw std::out_of_range("Index of enemy is out of range");
 		return BAD;
 	}
 	if (Monsters[IndOfEnemy]->GetHealth() == 0)
 	{
+		if (Monsters[IndOfEnemy]->GetType() >= TEEN) // If this is a supervillain you should check all monsters' auras
+		{
+			for (int i = 0; i < Monsters.GetSize(); i++) // Check vector of monsters
+			{
+				if (i == IndOfEnemy) // if it's this monster skip it
+					continue;
+
+				for (int j = 0; j < Monsters[i]->BrosWithAura.GetSize(); j++) // Check enemies which have his auras
+					if (Monsters[i]->BrosWithAura[j] == Monsters[IndOfEnemy])
+					{
+						ConstIter<Enemy*> fir(&(Monsters[i]->BrosWithAura[j])), sec;
+						if (j + 1 < Monsters[i]->BrosWithAura.GetSize()) sec = &(Monsters[i]->BrosWithAura[j + 1]);
+						else sec = Monsters[i]->BrosWithAura.cend();
+						Monsters[i]->BrosWithAura.Erase(fir, sec); // Delete this monster from these vectors
+						double dam, sp, reg, hp;
+						Monsters[IndOfEnemy]->GetAuras(dam, sp, reg, hp);
+						Monsters[i]->Reduce(dam, sp, reg, hp);
+					}
+			}
+		}
+		for(int i = 0; i < Towers.GetSize(); i++) // Check all towers for tracking this monster
+			if (Towers[i].Tracker == Monsters[IndOfEnemy])
+				Towers[i].Tracker = nullptr;
 		delete Monsters[IndOfEnemy];
-		ConstIter<Enemy*> it(&Monsters[IndOfEnemy]);
-		Monsters.Erase(it, it + 1);
+		ConstIter<Enemy*> fir(&Monsters[IndOfEnemy]), sec;
+		if (IndOfEnemy + 1 < Monsters.GetSize()) sec = &Monsters[IndOfEnemy + 1];
+		else sec = Monsters.cend();
+		Monsters.Erase(fir, sec);
 		return GOOD;
 	}
 	else {
@@ -816,18 +895,18 @@ int Map::BreakWall(int IndOfWall)
 {
 	if ((IndOfWall < 0) || (IndOfWall >= Walls.GetSize()))
 	{
-#ifdef DEBUG
-		std::cout << "Index of wall if out of range" << std::endl;
-#endif
+		throw std::out_of_range("Index of wall if out of range");
 		return BAD;
 	}
 	if (Walls[IndOfWall].GetHealth() == 0)
 	{
-		ConstIter<Wall> it(&Walls[IndOfWall]);
+		ConstIter<Wall> fir(&Walls[IndOfWall]), sec;
 		int x, y;
-		(*it).GetCoord(x, y);
+		(*fir).GetCoord(x, y);
 		Fields[x][y] = ROAD;
-		Walls.Erase(it, it + 1);
+		if (IndOfWall + 1 < Walls.GetSize()) sec = &Walls[IndOfWall + 1];
+		else sec = Walls.cend();
+		Walls.Erase(fir, sec);
 		return GOOD;
 	}
 	else {
@@ -847,7 +926,7 @@ int Map::BuildWall(int x0, int y0)
 	if ((type == ROAD) && (CheckMonst(x0, y0) == GOOD))
 	{
 		Fields[x0][y0] = WALL;
-		MyCast.BuySmth(Dop.GetPr());
+		if(MyCast.BuySmth(Dop.GetPr()) == GOOD) std::cout << "Minus " << Dop.GetPr() << " coins" << std::endl;
 		Walls.Insert(Walls.cend(), Dop);
 	}
 	else {
@@ -868,7 +947,7 @@ int Map::BuildTow(int x0, int y0)
 	if ((type == VALLEY) && (CheckMonst(x0, y0) == GOOD))
 	{
 		Fields[x0][y0] = TOWER;
-		MyCast.BuySmth(Dop.GetPr());
+		if(MyCast.BuySmth(Dop.GetPr()) == GOOD) std::cout << "Minus " << Dop.GetPr() << " coins" << std::endl;
 		Towers.Insert(Towers.cend(), Dop);
 	}
 	else {
@@ -889,4 +968,18 @@ int Map::CheckMonst(int x0, int y0)
 		}
 	}
 	return flag;
+}
+
+void Map::RepWall()
+{
+	if (Walls.GetSize())
+	{
+		std::cout << "Enter the number of the wall from 1 to " << Walls.GetSize() << std::endl;
+		int x = 0;
+		Get_num(x);
+		if ((x > 0) && (x <= Walls.GetSize()))
+			Walls[x - 1].Repair(MyCast);
+		else std::cout << "Wall with this number doesn't exist" << std::endl;
+	}
+	else std::cout << "You don't have any walls" << std::endl;
 }

@@ -33,6 +33,7 @@ public:
 	void GetCoord(int& x1, int& y1) const { x1 = X; y1 = Y; }
 	int operator == (const Tile& Dop) const { return ((Dop.X == X) && (Dop.Y == Y)); }
 	int operator != (const Tile& Dop) const { return ((Dop.X != X) || (Dop.Y != Y)); }
+	friend std::ostream& operator << (std::ostream& out, const Tile& dop);
 };
 
 class Node
@@ -64,6 +65,7 @@ public:
 	int Insert(ConstIter<Node*> it, Node* MyNode) { return Pointers.Insert(it, MyNode); }
 	int GetSize() const { return Pointers.GetSize(); }
 	void Clear() { Pointers.Clear(); }
+	void ChangePrior() { Prior = (Prior % 2) + 1; }
 };
 
 #endif

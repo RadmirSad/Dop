@@ -46,7 +46,10 @@ public:
 	Tile GetTile() const { return Field; }
 	void GetCoord(int& x1, int& y1) const { Field.GetCoord(x1, y1); }
 	void ChangeTile(int x1, int y1) { Field.ChangeTile(x1, y1); }
+
 	friend class Map;
+	friend int OnlyMonsters(Map& MyMap, int& flag_for_alive);
+	friend int OnlyTowers(Map& MyMap, int& flag_for_monst);
 };
 
 /*=========================== Enemies ===========================*/
@@ -88,6 +91,8 @@ public:
 	virtual const char* Type() const = 0;
 	virtual void GetAuras(double& AurDam, double& AurSp, double& AurReg, double& AurHp) const { ; }
 	virtual int GetRad() const { return -1; }
+
+	friend class Map;
 };
 
 class Kid : public Enemy

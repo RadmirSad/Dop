@@ -5,12 +5,15 @@
 
 #include "Destruct.h"
 
+
+class Map;
 class Building;
 class Wall;
 class Castle;
 class Tower;
 class Tile;
 class Enemy;
+
 
 /*=======================Destructible objects========================*/
 
@@ -40,9 +43,11 @@ public:
 	int GetRev() const { return Revenue; }
 	double Cash() const { return CashBalance; }
 	int CostOfUp() const { return CostOfUpg; }
-	void Upgrade(double coef);
+	int Upgrade(double coef);
 	int BuySmth(double Cost);
 	void Multiply(double coef);
+	void SetBasicParams();
+	void TakeMoney() { CashBalance += Revenue; }
 	friend class Map;
 };
 
@@ -68,9 +73,11 @@ public:
 	double GetDam() const { return DamPerSec; }
 	int GetRad() const { return Radius; }
 	void GetCoord(int& x1, int& y1) const { Field.GetCoord(x1, y1); }
+	Tile GetTile() const { return Field; }
 	void ChangeTile(int x1, int y1) { Field.ChangeTile(x1, y1); }
 	void ChangeTile(const Tile& NewField) { Field.ChangeTile(NewField); }
 
+	friend class Map;
 	int ToDamage(Map& MyMap);
 	int Upgrade(Map& MyMap);
 	Enemy* FindEnemy(const Map& MyMap);

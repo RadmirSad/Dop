@@ -17,12 +17,19 @@ int main()
 		{
 		case 1:
 			if (flag_for_map)
+			{
 				StartGame(NewMap);
+				NewMap.CleanAll();
+				flag_for_map = 0;
+			}
 			else
 				std::cout << std::endl << "Before starting the game you should create new map or download it" << std::endl << std::endl;
 			break;
 		case 2:
-			if (DownloadDial(NewMap) == GOOD) flag_for_map = 1;
+			if (flag_for_map)
+				NewMap.CleanAll();
+			if (DownloadDial(NewMap) == GOOD)
+				flag_for_map = 1;
 			break;
 		case 3:
 			if (NewMap.DialogMap() == GOOD) flag_for_map = 1;

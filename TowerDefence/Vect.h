@@ -133,7 +133,7 @@ MyVector<T>::MyVector(const MyVector& Sec)
 	int count = 0;
 	if (Size % DopSize == 0) count = Size;
 	else count = (Size % DopSize) * DopSize + DopSize;
-	if (count != 0)
+	if (count)
 		Elem = new T[count];
 	else Elem = nullptr;
 	for (int i = 0; i < Size; i++)
@@ -145,13 +145,15 @@ MyVector<T>& MyVector<T>::operator = (const MyVector& Sec)
 {
 	if (this == &Sec)
 		return *this;
-	int count = Sec.Size;
-	if (count % DopSize == 0) count = Size;
-	else count = (count % DopSize) * DopSize + DopSize;
-	T* buf = new T[count];
-	Size = count;
+	int count = 0;
+	if (count % DopSize == 0) count = Sec.Size;
+	else count = (Sec.Size / DopSize) * DopSize + DopSize;
+	T* buf = nullptr;
+	if (count)
+		buf = new T[count];
 	delete[] Elem;
 	Elem = buf;
+	Size = Sec.Size;
 	for (int i = 0; i < Size; i++)
 		Elem[i] = Sec.Elem[i];
 	return *this;
