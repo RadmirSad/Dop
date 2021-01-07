@@ -34,7 +34,7 @@ protected:
 	int CostOfRepair = 0;
 	double HpIncrease = 0;
 public:
-	Building() { ; }
+	Building(): Destruct() { ; }
 	Building(int Cost, double Inc, double MHp, const Tile& NewField);
 	Building(int Cost, double Inc, double MHp, int x0, int y0);
 	int GetCostRep() const { return CostOfRepair; }

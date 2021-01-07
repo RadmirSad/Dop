@@ -8,7 +8,6 @@
 
 class Map;
 class Building;
-class Wall;
 class Castle;
 class Tower;
 class Tile;
@@ -21,9 +20,8 @@ class Wall : public Building
 {
 private:
 	int Price = 100;
-	int TypeOfCell = EMPTY;
 public:
-	Wall() { Building(50, 50, 100, 0, 0); }
+	Wall(): Building(50, 50, 100, 0, 0) { ; }
 	Wall(double coef, int x, int y): Building(50, 50 * coef, 100 * coef, x, y) { }
 	Wall(double coef, const Tile& Field): Building(50, 50 * coef, 100 * coef, Field) { }
 	int GetPr() const { return Price; }

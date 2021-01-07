@@ -90,7 +90,6 @@ void StartGame(Map& MyMap)
 	std::thread Menu(Waiting, std::ref(MyMap), std::ref(flag_for_exit));
 	Towers.detach();
 	Monsters.detach();
-	Menu.join();
 	mtx_flag_.lock();
 	while (!flag_for_exit) {
 		mtx_flag_.unlock();
@@ -98,6 +97,7 @@ void StartGame(Map& MyMap)
 		mtx_flag_.lock();
 	}
 	mtx_flag_.unlock();
+	Menu.join();
 	return;
 }
 
@@ -295,9 +295,7 @@ void GetMenu(Map& MyMap, int& quit)
 			break;
 		case 10:
 			flag = 1;
-			mtx_flag_.lock();
 			quit = GOOD;
-			mtx_flag_.unlock();
 			break;
 		default:
 			std::cout << std::endl << "Action with this number doesn't exist" << std::endl;
