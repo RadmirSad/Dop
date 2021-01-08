@@ -10,6 +10,8 @@ Map::~Map()
 
 int Map::ChangeType(int NewType, int x, int y)
 {
+	if ((x < 0) || (x >= Dim) || (y < 0) || (y >= Dim))
+		throw std::out_of_range("One of the coordinates was out of range");
 	if ((NewType < BASIN) || (NewType > EMPTY)) return BAD;
 	Fields[x][y] = NewType;
 	return GOOD;
@@ -19,6 +21,15 @@ int Map::GetCoordType(const Tile& a) const
 {
 	int x, y;
 	a.GetCoord(x, y);
+	if ((x < 0) || (x >= Dim) || (y < 0) || (y >= Dim))
+		throw std::out_of_range("One of the coordinates was out of range");
+	return Fields[x][y];
+}
+
+int Map::GetCoordType(int x, int y) const
+{
+	if ((x < 0) || (x >= Dim) || (y < 0) || (y >= Dim))
+		throw std::out_of_range("One of the coordinates was out of range");
 	return Fields[x][y];
 }
 
@@ -322,7 +333,7 @@ int Map::InstallLevel(int flag) // flag for download
 int Map::ChangeLevel(int NewLvl)
 {
 	if (NewLvl <= 0) {
-		std::cout << "Incorrect value of new level" << std::endl;
+		throw std::invalid_argument("Incorrect value of new level");
 		return BAD;
 	}
 	Level = NewLvl;
@@ -934,7 +945,7 @@ int Map::BuildTow(int x0, int y0)
 	return GOOD;
 }
 
-int Map::CheckMonst(int x0, int y0)
+int Map::CheckMonst(int x0, int y0) const
 {
 	int x, y, flag = GOOD;
 	for (int i = 0; i < Monsters.GetSize(); i++)

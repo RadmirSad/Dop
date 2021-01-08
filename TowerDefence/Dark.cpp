@@ -35,7 +35,7 @@ int Enemy::TakeDam(double Dam)
 int Enemy::ChangeTime(int NewTime)
 {
 	if (NewTime < 0) {
-		std::cout << "Time was less then 0" << std::endl;
+		std::invalid_argument("Time was less then 0");
 		return BAD;
 	}
 	TimeOfExit = NewTime;
@@ -55,6 +55,7 @@ int Enemy::Increase(double AurDam, double AurSp, double AurReg, double AurHp)
 		return BAD;
 	}
 	coef[DAMAGE] *= AurDam, coef[SPEED] *= AurSp, coef[REGEN] *= AurReg, coef[HP] *= AurHp;
+	Health *= AurHp; MaxHealth *= AurHp;
 	return GOOD;
 }
 
@@ -65,6 +66,7 @@ int Enemy::Reduce(double AurDam, double AurSp, double AurReg, double AurHp)
 		return BAD;
 	}
 	coef[DAMAGE] /= AurDam, coef[SPEED] /= AurSp, coef[REGEN] /= AurReg, coef[HP] /= AurHp;
+	Health /= AurHp; MaxHealth /= AurHp;
 	if ((coef[DAMAGE] < 1) || (coef[SPEED] < 1) || (coef[REGEN] < 1) || (coef[HP] < 1))
 	{
 		throw std::logic_error("Critical error. One of the coefficients were less than 1");

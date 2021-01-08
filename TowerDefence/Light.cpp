@@ -12,7 +12,7 @@ Castle::Castle(double coef, int x, int y): Building((int)(100 * coef), 100 * coe
 int Castle::ChangeRevenue(int NewRev)
 {
 	if (NewRev <= 0) {
-		std::cout << "New revenue should be more than 0" << std::endl;
+		throw std::invalid_argument("New revenue should be more than 0");
 		return BAD;
 	}
 	Revenue = NewRev;
@@ -21,6 +21,8 @@ int Castle::ChangeRevenue(int NewRev)
 
 int Castle::Upgrade(double coef)
 {
+	if (coef < 1)
+		throw std::invalid_argument("Impossible value of level");
 	if (CashBalance - CostOfUpg < 0)
 	{
 		std::cout << "You don't have enough money for upgrade" << std::endl;
@@ -61,6 +63,24 @@ void Castle::SetBasicParams()
 }
 
 /*=============================== Methods for Tower ===============================*/
+
+Tower::Tower(double coef, const Tile& MyField, int NewPr, double NewDam, int NewRad, double CUp) : Price((int)(NewPr* coef)),
+DamPerSec(NewDam), Radius(NewRad), Field(MyField), CostOfUp(coef * CUp)
+{
+	if (coef < 1)
+		throw std::invalid_argument("Impossible value of level");
+	if ((NewDam <= 0) || (NewPr <= 0) || (NewRad <= 0) || (CUp <= 0))
+		throw std::invalid_argument("One of pararmeters was less than 0");
+}
+
+Tower::Tower(double coef, int x, int y, double NewDam, int NewRad, int NewPr, double CUp) : Price((int)(NewPr* coef)),
+DamPerSec(NewDam), Radius(NewRad), Field(x, y), CostOfUp(coef* CUp)
+{
+	if (coef < 1)
+		throw std::invalid_argument("Impossible value of level");
+	if ((NewDam <= 0) || (NewPr <= 0) || (NewRad <= 0) || (CUp <= 0))
+		throw std::invalid_argument("One of pararmeters was less than 0");
+}
 
 int Tower::ToDamage(Map& MyMap)
 {

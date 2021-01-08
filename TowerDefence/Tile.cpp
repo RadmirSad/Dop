@@ -11,10 +11,8 @@ Tile::Tile(int x0, int y0)
 
 Tile::Tile(const Tile& NewTile)
 {
-	int x, y;
-	NewTile.GetCoord(x, y);
-	X = x;
-	Y = y;
+	X = NewTile.X;
+	Y = NewTile.Y;
 }
 
 std::ostream& operator << (std::ostream& out, const Tile& dop)
