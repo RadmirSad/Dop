@@ -1,0 +1,29 @@
+﻿  Rotate.c
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(20,56): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(34,15): warning C4013: clock_gettime: нет определения; предполагается "extern" с возвратом типа "int"
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(34,40): error C2065: CLOCK_PROCESS_CPUTIME_ID: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(34,45): error C2065: t2: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(35,3): error C2065: t: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(35,4): error C2224: выражение слева от ".tv_sec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(35,15): error C2065: t2: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(35,16): error C2224: выражение слева от ".tv_sec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(35,27): error C2065: t1: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(35,28): error C2224: выражение слева от ".tv_sec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(36,8): error C2065: t: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(36,9): error C2224: выражение слева от ".tv_nsec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(36,21): error C2065: t2: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(36,22): error C2224: выражение слева от ".tv_nsec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(36,34): error C2065: t1: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(36,35): error C2224: выражение слева от ".tv_nsec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(37,4): error C2065: t: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(37,5): error C2224: выражение слева от ".tv_sec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(38,4): error C2065: t: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(38,5): error C2224: выражение слева от ".tv_nsec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(40,31): error C2065: t: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(40,32): error C2224: выражение слева от ".tv_sec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(40,41): error C2065: t: необъявленный идентификатор
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(40,42): error C2224: выражение слева от ".tv_nsec" должно иметь тип структуры или объединения
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(40,9): warning C4473: "printf": передано недостаточно аргументов для строки формата
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(40,9): message : заполнители и их параметры ожидают переменное число аргументов в количестве 2, но было предоставлено 0
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(40,9): message : отсутствующий вариативный аргумент "1" требуется для строки форматирования "%ld"
+D:\Program\Dop_Projects\Project on C\ProjRotatePNG\Rotate.c(29,1): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
