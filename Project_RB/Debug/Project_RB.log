@@ -1,0 +1,6 @@
+﻿  RB.cpp
+D:\Program\Dop_Projects\Project_RB\RB.cpp(127): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+D:\Program\Dop_Projects\Project_RB\RB.cpp(371): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+D:\Program\Dop_Projects\Project_RB\RB.cpp(536): warning C4018: <: несоответствие типов со знаком и без знака
+D:\Program\Dop_Projects\Project_RB\RB.cpp(542): warning C4172: возвращение адреса локальной или временной переменной : buf
+  Project_RB.vcxproj -> D:\Program\Dop_Projects\Project_RB\Debug\Project_RB.exe
